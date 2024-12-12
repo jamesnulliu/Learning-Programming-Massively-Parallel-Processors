@@ -1,0 +1,48 @@
+CompileFlags:
+  Add: 
+    # [TODO] Maybe add a python script to change cuda path automatically?
+    # You may need to change this to /usr/local/cuda if using Linux:
+    # - --cuda-path=C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.5/
+    - --no-cuda-version-check
+  Remove:
+    - -ccbin
+    - -forward-unknown-to-host-compiler
+    - -rdc=true
+    - -gencode
+    - --generate-code*
+    - -Xcudafe
+    - --diag_suppress=*
+    - --expt-relaxed-constexpr
+    - --expt-extended-lambda
+    - -Xcompiler*
+    - -arch=*
+
+Diagnostics:
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+
+  ClangTidy:
+    Add: [
+      performance-*,
+      modernize-*,
+      clang-analyzer-*,
+      readability-*,
+    ]
+
+    Remove: [
+      readability-isolate-declaration,
+      readability-identifier-length,
+      readability-magic-numbers,
+    ]
+
+    CheckOptions:
+      readability-identifier-naming.VariableCase: lowerCamelCase
+      readability-identifier-naming.ProtectedMemberCase: lowerCamelCase
+      readability-identifier-naming.PrivateMemberCase: lowerCamelCase
+      readability-identifier-naming.PublicMemberCase: lowerCamelCase
+      readability-identifier-naming.NamespaceCase: lower_case
+      readability-identifier-naming.EnumCase: lowerCamelCase
+      readability-identifier-naming.ClassCase: CamelCase
+      readability-identifier-naming.StructCase: CamelCase
+      readability-identifier-naming.FunctionCase: lowerCamelCase
+      readability-identifier-naming.ClassMethodCase: lowerCamelCase
