@@ -1,4 +1,4 @@
-set(LIB_NAME "examplePackageLib")
+set(LIB_NAME "pmpp-torch-ops")
 
 file(GLOB_RECURSE CXX_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE CUDA_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
@@ -20,8 +20,8 @@ target_link_libraries(
 )
 
 target_compile_definitions(${LIB_NAME} 
-    PRIVATE $<$<BOOL:${BUILD_SHARED_LIBS}>:VSC_PYTHON_TEMPLATE_EXPORT>
-    INTERFACE $<$<BOOL:${BUILD_SHARED_LIBS}>:VSC_PYTHON_TEMPLATE_IMPORT>
+    PRIVATE $<$<BOOL:${BUILD_SHARED_LIBS}>:PMPP_EXPORT>
+    INTERFACE $<$<BOOL:${BUILD_SHARED_LIBS}>:PMPP_IMPORT>
 )
 
 # @see "cmake/utils/lib-install.cmake"

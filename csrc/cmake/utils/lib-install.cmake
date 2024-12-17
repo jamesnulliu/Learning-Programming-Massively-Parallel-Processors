@@ -37,23 +37,23 @@ function(install_libraries LIB_COMPONENT LIB_NAMESPACE LIB_LIST)
 
     # Generate and install version file
     write_basic_package_version_file(
-        ${CMAKE_CURRENT_BINARY_DIR}/${LIB_COMPONENT}ConfigVersion.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${LIB_COMPONENT}-config-version.cmake
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY SameMajorVersion
     )
 
     # Generate and install config file
     configure_package_config_file(
-        ${PROJECT_SOURCE_DIR}/cmake/config.cmake.in/${LIB_COMPONENT}Config.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/${LIB_COMPONENT}Config.cmake
+        ${PROJECT_SOURCE_DIR}/cmake/config.cmake.in/${LIB_COMPONENT}-config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/${LIB_COMPONENT}-config.cmake
         INSTALL_DESTINATION lib/cmake/${LIB_COMPONENT}
     )
 
     # Install config files
     install(
         FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/${LIB_COMPONENT}Config.cmake
-            ${CMAKE_CURRENT_BINARY_DIR}/${LIB_COMPONENT}ConfigVersion.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/${LIB_COMPONENT}-config.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/${LIB_COMPONENT}-config-version.cmake
         COMPONENT ${LIB_COMPONENT}
         DESTINATION 
             lib/cmake/${LIB_COMPONENT}

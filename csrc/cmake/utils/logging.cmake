@@ -17,7 +17,7 @@ set(LOG_WHITE "${Esc}[0;37m")
 set(LOG_RESET "${Esc}[m")
 
 if(NOT DEFINED LOG_PREFIX)
-    set(LOG_PREFIX "_template_project_name_")
+    set(LOG_PREFIX "${LOG_PURPLE}pmpp${LOG_RESET}")
 endif()
 
 function(log_info msg)

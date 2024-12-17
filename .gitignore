@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
@@ -25,6 +25,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -161,10 +162,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-# Not ignore anything from ./csrc
-!/csrc/*
-# But ignore ./build in case someone build with -B ./csrc/build (better not do this)
-/csrc/build
-
 # Ignore installation directory
-/example_package/_torch_ops
+/src/pmpp/_torch_ops/include
+/src/pmpp/_torch_ops/lib/*
+!**/__init__.py
+
+!csrc/lib
+
+vcpkg_installed

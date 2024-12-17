@@ -10,7 +10,7 @@
     #include <utility>
 #endif
 
-namespace template_project_name
+namespace pmpp
 {
 /**
  * @brief Compute the offset of a multi-dimensional array.
@@ -22,7 +22,7 @@ namespace template_project_name
  * @example computeOffset(1, 2, 3, 4, 5, 6) -> 3*1 + 2*6 + 1*6*5 = 45
  */
 template <typename OffsetT, typename... ArgsT>
-constexpr auto computeOffset(ArgsT... args) -> OffsetT
+[[nodiscard]] constexpr auto computeOffset(ArgsT... args) -> OffsetT
 {
     constexpr std::size_t nArgs = sizeof...(ArgsT);
     constexpr std::size_t nDims = nArgs / 2;
@@ -48,4 +48,4 @@ constexpr auto computeOffset(ArgsT... args) -> OffsetT
     return offset;
 }
 
-}  // namespace template_project_name
+}  // namespace pmpp

@@ -8,6 +8,7 @@ BUILD_TYPE=Release
 CXX_STANDARD=20
 CUDA_STANDARD=20
 BUILD_SHARED_LIBS=OFF
+VCPKG_HOME=$VCPKG_HOME
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -26,6 +27,8 @@ while [[ $# -gt 0 ]]; do
             source ./csrc/scripts/windows-prune-PATH.sh ;;
         --rm-build-dir)
             rm -rf $BUILD_DIR ;;
+        --vcpkg-home|--vcpkg-dir|--vcpkg-root)
+            VCPKG_HOME=$2; shift ;;
         *)
             # @todo Add detailed help message
             echo "Unknown argument: $1"; exit 1 ;;
@@ -34,8 +37,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 cmake -G Ninja -S $SOURCE_DIR -B $BUILD_DIR \
+    -DCMAKE_TOOLCHAIN_FILE="$VCPKG_HOME/scripts/buildsystems/vcpkg.cmake" \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_CXX_STANDARD=$CXX_STANDARD \
-    -DCMAKE_CUDA_STANDARD=$CUDA_STANDARD 
+    -DCMAKE_CUDA_STANDARD=$CUDA_STANDARD  \
+    -DVCPKG_TARGET_TRIPLET="x64-linux-no-cxx11abi" \
+    -DVCPKG_OVERLAY_TRIPLETS="csrc/cmake/vcpkg-triplets"
 
 cmake --build $BUILD_DIR -j $(nproc)

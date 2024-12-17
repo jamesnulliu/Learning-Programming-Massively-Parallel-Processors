@@ -1,13 +1,15 @@
 from pathlib import Path
+import shutil
 import sys
 from os import path as osp
 import subprocess
-from setuptools import setup, Extension, find_packages
+from setuptools import find_namespace_packages, setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
+from setuptools.command.build_py import build_py
+from wheel.bdist_wheel import bdist_wheel
 
-""" You may want to change the following variables to customize your project """
 # Name of your package; Must match the directory name under `CSRC_DIR`:
-PKG_NAME = "example_package"
+PKG_NAME = "pmpp"
 # Path to the directory of setup.py file:
 SETUP_DIR = Path(__file__).parent.absolute()
 # Where to create the cmake build directory:
@@ -16,7 +18,6 @@ BUILD_DIR = Path(SETUP_DIR, "build")
 CSRC_DIR = Path(SETUP_DIR, "csrc")
 # Where to install the op library:
 TORCH_OPS_DIR = Path(SETUP_DIR, "src", PKG_NAME, "_torch_ops")
-"""''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''"""
 
 
 class CMakeExtension(Extension):
@@ -65,6 +66,25 @@ class CMakeBuild(build_ext):
         subprocess.check_call(["cmake"] + install_args)
 
 
+class BuildPy(build_py):
+    def run(self):
+        self.run_command("build_ext")
+        super().run()
+
+class BDistWheel(bdist_wheel):
+    def run(self):
+        self.run_command('build_py')
+        super().run()
+        
+        dist_dir = Path('dist')
+        dist_dir.mkdir(exist_ok=True)
+        
+        wheel_dir = Path(self.dist_dir)
+        wheels = list(wheel_dir.glob('*.whl'))
+        if wheels:
+            wheel_file = wheels[0]
+            shutil.copy2(wheel_file, dist_dir / wheel_file.name)
+
 setup(
     ext_modules=[
         CMakeExtension(
@@ -74,11 +94,12 @@ setup(
             install_dir=TORCH_OPS_DIR,
         )
     ],
-    cmdclass={"build_ext": CMakeBuild},
-    packages=find_packages(where="./src"),
-    package_dir={PKG_NAME: "./src"},
-    package_data={
-        # Use relative path here
-        PKG_NAME: ["_torch_ops/lib/*.so", "_torch_ops/lib/*.dll"]
+    cmdclass={
+        "build_ext": CMakeBuild,
+        "build_py": BuildPy,
+        "bdist_wheel": BDistWheel
     },
+    packages=find_namespace_packages(where="./src"),
+    package_dir={"pmpp": "./src/pmpp"},
+    package_data={"pmpp": ["_torch_ops/lib/*.so", "_torch_ops/lib/*.dll"]},
 )

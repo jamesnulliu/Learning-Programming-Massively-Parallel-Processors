@@ -35,7 +35,7 @@
   Default: *Auto-Detect*.
 - `PROJECT_NAMESPACE`: Project namespace; Library targets should have an alias with project namespace as the prefix.  
   See: [CMakelists.txt](../CMakeLists.txt).  
-  Default: `_template_project_name_`;
+  Default: `pmpp`;
 - `STACK_SIZE`: Stack size for the executable targets (if any).  
   See: [cmake/compilers/cxx-compiler-configs.cmake](../cmake/compilers/cxx-compiler-configs.cmake).  
   Default: `1048576` (Bytes).

@@ -1,11 +1,11 @@
 [build-system]
-requires = ["setuptools>=42", "wheel", "torch>=2.0.0", "torchvision"]
+requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "example_package"
+name = "pmpp"
 version = "0.1.0"
-description = "A Template of Python Project in Visual Studio Code with Github Actions CI/CD (Especially for PyTorch based Deeplearning Projects)."
+description = ""
 authors = [{ name = "jamesnulliu", email = "jamesnulliu@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.10, <3.13"

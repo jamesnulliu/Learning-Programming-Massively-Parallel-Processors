@@ -1,0 +1,9 @@
+{
+    "dependencies": [
+        "cxxopts",
+        "fmt",
+        "spdlog",
+        "proxy",
+        "gtest"
+    ]
+}

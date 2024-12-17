@@ -1,13 +1,12 @@
-# VSC-Python-Project-Template
-A Template of Python Project in Visual Studio Code with Github Actions CI/CD (Especially for PyTorch based Deeplearning Projects).
+# LEARN *Programming Massively Parallel Processors*
 
 ## How to Build
 
 Create a new conda environment:
 
 ```bash
-conda create -n pytemplate python=3.12
-conda activate pytemplate
+conda create -n cuda-learn python=3.12
+conda activate cuda-learn
 ```
 
 Install `example_package`:

@@ -1,8 +1,5 @@
 CompileFlags:
   Add: 
-    # [TODO] Maybe add a python script to change cuda path automatically?
-    # You may need to change this to /usr/local/cuda if using Linux:
-    # - --cuda-path=C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.5/
     - --no-cuda-version-check
   Remove:
     - -ccbin
