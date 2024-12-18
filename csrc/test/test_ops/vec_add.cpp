@@ -1,11 +1,6 @@
-#include <ATen/core/ATen_fwd.h>
-#include <ATen/core/dispatch/Dispatcher.h>
-#include <c10/core/DeviceType.h>
 #include <gtest/gtest.h>
-#include <torch/csrc/autograd/generated/variable_factories.h>
-#include <torch/optim/optimizer.h>
+#include <pmpp/types/cxx_types.hpp>
 #include <torch/torch.h>
-#include <torch/types.h>
 
 TEST(OpTest, VecAdd)
 {
@@ -14,18 +9,18 @@ TEST(OpTest, VecAdd)
             .findSchemaOrThrow("pmpp::vector_add", "")
             .typed<torch::Tensor(const torch::Tensor&, const torch::Tensor&)>();
 
-    auto hA = torch::rand(
-        10000000,
-        torch::TensorOptions().dtype(torch::kF32).device(torch::kCPU));
-    auto hB = torch::rand(
-        10000000,
-        torch::TensorOptions().dtype(torch::kF32).device(torch::kCPU));
-    auto hC1 = custom_op.call(hA, hB);
+    constexpr pmpp::size_t nElems = 1e8;
 
-    auto dA = hA.to(torch::TensorOptions().device(torch::kCUDA));
-    auto dB = hB.to(torch::TensorOptions().device(torch::kCUDA));
-    auto dC = custom_op.call(dA, dB);
-    auto hC2 = dC.to(c10::TensorOptions().device(torch::kCPU));
+    torch::Tensor hA = torch::rand(
+        nElems, torch::TensorOptions().dtype(torch::kF32).device(torch::kCPU));
+    torch::Tensor hB = torch::rand(
+        nElems, torch::TensorOptions().dtype(torch::kF32).device(torch::kCPU));
+    torch::Tensor hC1 = custom_op.call(hA, hB);
+
+    torch::Tensor dA = hA.to(torch::TensorOptions().device(torch::kCUDA));
+    torch::Tensor dB = hB.to(torch::TensorOptions().device(torch::kCUDA));
+    torch::Tensor dC = custom_op.call(dA, dB);
+    torch::Tensor hC2 = dC.to(c10::TensorOptions().device(torch::kCPU));
 
     EXPECT_TRUE(hC1.equal(hC2));
 }

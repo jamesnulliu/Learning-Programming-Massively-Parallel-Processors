@@ -10,7 +10,8 @@ namespace pmpp::ops
 using Device = ::pmpp::Device;
 
 template <typename ScalarT, Device DeviceT>
-void launchVecAdd(const ScalarT* a, const ScalarT* b, ScalarT* c, size_t n);
+void launchVecAdd(const ScalarT* a, const ScalarT* b, ScalarT* c,
+                  size_t n) = delete;
 
 template <>
 PMPP_API void launchVecAdd<fp32_t, Device::CPU>(const fp32_t* a,

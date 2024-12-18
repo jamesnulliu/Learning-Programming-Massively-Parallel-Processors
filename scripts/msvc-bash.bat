@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-call csrc\scripts\msvc-setup.bat
+call scripts\msvc-setup.bat
 
 call bash %*
 

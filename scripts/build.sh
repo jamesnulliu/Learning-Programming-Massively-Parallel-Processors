@@ -24,7 +24,7 @@ while [[ $# -gt 0 ]]; do
             CUDA_STANDARD="${1#*=}" ;;
         --prune-env-path)
             # Takes effects only on windows
-            source ./csrc/scripts/windows-prune-PATH.sh ;;
+            source ./scripts/windows-prune-PATH.sh ;;
         --rm-build-dir)
             rm -rf $BUILD_DIR ;;
         --vcpkg-home|--vcpkg-dir|--vcpkg-root)

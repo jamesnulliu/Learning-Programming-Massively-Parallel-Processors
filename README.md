@@ -13,7 +13,7 @@ pip install torch torchvision torchaudio
 To build the C++ part only (lib pmpp):
 
 ```bash
-bash csrc/scripts/build.sh -S ./csrc -B ./build
+bash scripts/build.sh -S ./csrc -B ./build
 ```
 
 Run ctest to test lib pmpp:

@@ -1,11 +1,8 @@
-#include <c10/core/ScalarType.h>
-#include <c10/util/Exception.h>
-#include <torch/csrc/autograd/generated/variable_factories.h>
-#include <torch/extension.h>
-#include <torch/library.h>
-#include <torch/optim/optimizer.h>
+#include <torch/torch.h>
+#include <torch/types.h>
 
 #include "pmpp/ops/vec_add.hpp"
+#include "pmpp/types/cu_types.cuh"
 #include "pmpp/types/cxx_types.hpp"
 #include "pmpp/types/device.hpp"
 
@@ -13,8 +10,8 @@ namespace pmpp
 {
 
 template <typename ScalarT>
-auto __vector_add_impl(const torch::Tensor& A, const torch::Tensor& B)
-    -> torch::Tensor
+auto __vector_add_impl(const torch::Tensor& A,
+                       const torch::Tensor& B) -> torch::Tensor
 {
     auto nElems = pmpp::size_t(A.size(0));
     auto C = torch::empty_like(A);
@@ -32,8 +29,8 @@ auto __vector_add_impl(const torch::Tensor& A, const torch::Tensor& B)
     return C;
 }
 
-auto __vector_add(const torch::Tensor& A, const torch::Tensor& B)
-    -> torch::Tensor
+auto __vector_add(const torch::Tensor& A,
+                  const torch::Tensor& B) -> torch::Tensor
 {
     // Check if tensors are on the same device
     TORCH_CHECK(A.device() == B.device(),
@@ -50,14 +47,30 @@ auto __vector_add(const torch::Tensor& A, const torch::Tensor& B)
                 " and ", B.sizes());
 
     switch (A.scalar_type()) {
-    case torch::ScalarType::Float:
+    case torch::kF16: {
+        // [TODO]
+        // // return __vector_add_impl<pmpp::fp16_t>(A, B);
+        AT_ERROR("Unsupported dtype: ", A.dtype());
+    }
+    case torch::kF32: {
         return __vector_add_impl<pmpp::fp32_t>(A, B);
-    case torch::ScalarType::Double:
-        // return __vector_add_impl<pmpp::fp64_t>(A, B);
-    case torch::ScalarType::Int:
-        // return __vector_add_impl<pmpp::int32_t>(A, B);
-    case torch::ScalarType::Long:
-        // return __vector_add_impl<pmpp::int64_t>(A, B);
+        break;
+    }
+    case torch::kF64: {
+        // [TODO]
+        // // return __vector_add_impl<pmpp::fp64_t>(A, B);
+        AT_ERROR("Unsupported dtype: ", A.dtype());
+    }
+    case torch::kI32: {
+        // [TODO]
+        // // return __vector_add_impl<pmpp::int32_t>(A, B);
+        AT_ERROR("Unsupported dtype: ", A.dtype());
+    }
+    case torch::kI64: {
+        // [TODO]
+        // // return __vector_add_impl<pmpp::int64_t>(A, B);
+        AT_ERROR("Unsupported dtype: ", A.dtype());
+    }
     default:
         AT_ERROR("Unsupported dtype: ", A.dtype());
     }
