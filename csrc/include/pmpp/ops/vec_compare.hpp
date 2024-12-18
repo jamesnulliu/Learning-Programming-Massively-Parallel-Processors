@@ -19,4 +19,4 @@ template <typename T1, typename T2>
         throw std::runtime_error("Unsupported type for vec compare.");
     }
 }
-}  // namespace pmpp::cpu
+}  // namespace pmpp::ops::cpu

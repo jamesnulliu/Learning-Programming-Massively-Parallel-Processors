@@ -13,8 +13,8 @@ namespace pmpp
 {
 
 template <typename ScalarT>
-auto __vector_add_impl(const torch::Tensor& A,
-                       const torch::Tensor& B) -> torch::Tensor
+auto __vector_add_impl(const torch::Tensor& A, const torch::Tensor& B)
+    -> torch::Tensor
 {
     auto nElems = pmpp::size_t(A.size(0));
     auto C = torch::empty_like(A);
@@ -32,8 +32,8 @@ auto __vector_add_impl(const torch::Tensor& A,
     return C;
 }
 
-auto __vector_add(const torch::Tensor& A,
-                  const torch::Tensor& B) -> torch::Tensor
+auto __vector_add(const torch::Tensor& A, const torch::Tensor& B)
+    -> torch::Tensor
 {
     // Check if tensors are on the same device
     TORCH_CHECK(A.device() == B.device(),

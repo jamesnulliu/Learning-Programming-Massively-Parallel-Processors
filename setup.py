@@ -71,19 +71,21 @@ class BuildPy(build_py):
         self.run_command("build_ext")
         super().run()
 
+
 class BDistWheel(bdist_wheel):
     def run(self):
-        self.run_command('build_py')
+        self.run_command("build_py")
         super().run()
-        
-        dist_dir = Path('dist')
+
+        dist_dir = Path("dist")
         dist_dir.mkdir(exist_ok=True)
-        
+
         wheel_dir = Path(self.dist_dir)
-        wheels = list(wheel_dir.glob('*.whl'))
+        wheels = list(wheel_dir.glob("*.whl"))
         if wheels:
             wheel_file = wheels[0]
             shutil.copy2(wheel_file, dist_dir / wheel_file.name)
+
 
 setup(
     ext_modules=[
@@ -94,11 +96,7 @@ setup(
             install_dir=TORCH_OPS_DIR,
         )
     ],
-    cmdclass={
-        "build_ext": CMakeBuild,
-        "build_py": BuildPy,
-        "bdist_wheel": BDistWheel
-    },
+    cmdclass={"build_ext": CMakeBuild, "build_py": BuildPy, "bdist_wheel": BDistWheel},
     packages=find_namespace_packages(where="./src"),
     package_dir={"pmpp": "./src/pmpp"},
     package_data={"pmpp": ["_torch_ops/lib/*.so", "_torch_ops/lib/*.dll"]},
