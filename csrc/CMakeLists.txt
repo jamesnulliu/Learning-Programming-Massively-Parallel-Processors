@@ -15,6 +15,7 @@ set_default_values(
     # All the libs should have a alias with this namespace
     # [NOTE] Change this to your own namespace
     PROJECT_NAMESPACE "pmpp::"
+    FORCE_COLORED_OUTPUT ON
 )
 
 # Utility functions for installing libraries:
@@ -36,5 +37,17 @@ find_package(proxy CONFIG REQUIRED)
 enable_testing()
 find_package(GTest CONFIG REQUIRED)
 
+if (${FORCE_COLORED_OUTPUT})
+    add_compile_options(
+        $<$<CXX_COMPILER_ID:GNU>:-fdiagnostics-color=always>
+        $<$<CXX_COMPILER_ID:Clang>:-fcolor-diagnostics>
+    )
+endif ()
+
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib)
 add_subdirectory(${PROJECT_SOURCE_DIR}/test)
+
+set(CMAKE_CTEST_COMMAND ctest)
+add_custom_target(check 
+    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure --test-dir ${CMAKE_BINARY_DIR}
+    DEPENDS all)

@@ -1,25 +1,32 @@
 # LEARN *Programming Massively Parallel Processors*
 
-## How to Build
+## Quick Start
 
 Create a new conda environment:
 
 ```bash
 conda create -n cuda-learn python=3.12
 conda activate cuda-learn
+pip install torch torchvision torchaudio
 ```
 
-Install `example_package`:
+To build the C++ part only (lib pmpp):
+
+```bash
+bash csrc/scripts/build.sh -S ./csrc -B ./build
+```
+
+Run ctest to test lib pmpp:
+
+```bash
+ctest --test-dir ./build --output-on-failure
+```
+
+To build and instll the corresponding python lib:
 
 ```bash
 pip3 install --no-build-isolation .
 ```
 
-`torch.ops.example_package.vector_add` will be available after installation; See [test.py](test/test.py) for usage.
-
-## How to Test
-
-```bash
-conda activate pytemplate
-python test/test.py
-```
+`torch.ops.pmpp.vector_add` will be available after installation;  
+See [test.py](test/test.py) for usage.

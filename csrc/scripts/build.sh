@@ -36,7 +36,7 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-cmake -G Ninja -S $SOURCE_DIR -B $BUILD_DIR \
+cmake -S $SOURCE_DIR -B $BUILD_DIR -G Ninja \
     -DCMAKE_TOOLCHAIN_FILE="$VCPKG_HOME/scripts/buildsystems/vcpkg.cmake" \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_CXX_STANDARD=$CXX_STANDARD \
@@ -44,4 +44,4 @@ cmake -G Ninja -S $SOURCE_DIR -B $BUILD_DIR \
     -DVCPKG_TARGET_TRIPLET="x64-linux-no-cxx11abi" \
     -DVCPKG_OVERLAY_TRIPLETS="csrc/cmake/vcpkg-triplets"
 
-cmake --build $BUILD_DIR -j $(nproc)
+cmake --build $BUILD_DIR -j $(nproc) --target all check

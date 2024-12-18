@@ -13,10 +13,7 @@ target_link_libraries(
     msft_proxy
     fmt::fmt
     spdlog::spdlog
-    GTest::gtest
-    GTest::gtest_main
-    GTest::gmock 
-    GTest::gmock_main
+    GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
 )
 
 add_test(AllTestsInMain ${TARGET_NAME})
