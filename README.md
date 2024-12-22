@@ -1,4 +1,4 @@
-# LEARN *Programming Massively Parallel Processors*
+# Learning *Programming Massively Parallel Processors*
 
 ## Quick Start
 
