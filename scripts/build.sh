@@ -2,7 +2,7 @@
 
 set -e  # Exit on error
 
-SOURCE_DIR=.
+SOURCE_DIR=./csrc
 BUILD_DIR=./build
 BUILD_TYPE=Release
 CXX_STANDARD=20

@@ -25,7 +25,7 @@ ctest --test-dir ./build --output-on-failure
 To build and instll the corresponding python lib:
 
 ```bash
-pip3 install --no-build-isolation .
+pip3 install --no-build-isolation -v .
 ```
 
 `torch.ops.pmpp.vector_add` will be available after installation;  

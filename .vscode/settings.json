@@ -1,10 +1,21 @@
 {
-    "editor.formatOnPaste": true,
-    "editor.formatOnType": true,
+    "cmake.configureOnOpen": false,
+    "cmake.showOptionsMovedNotification": false,
+    "cmake.automaticReconfigure": false,
+    "cmake.configureOnEdit": false,
+    "cmake.pinnedCommands": [
+        "workbench.action.tasks.configureTaskRunner",
+        "workbench.action.tasks.runTask"
+    ],
+    "cmake.showConfigureWithDebuggerNotification": false,
+    "cmake.touchbar.visibility": "hidden",
     "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.intelliSenseEngineFallback": "disabled",
     "C_Cpp.intelliSenseEngine": "disabled",
-    "C_Cpp.default.compileCommands": "${workspaceFolder}/compile_commands.json",
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "[cpp]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
     "clangd.path": "clangd",
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}/build",
@@ -17,7 +28,7 @@
         "--header-insertion=iwyu",
         "--header-insertion-decorators",
         "--background-index",
-        "-j=6",
+        "-j=8",
         "--pch-storage=memory",
         "--function-arg-placeholders=false",
     ],

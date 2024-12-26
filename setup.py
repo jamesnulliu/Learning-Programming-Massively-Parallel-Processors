@@ -53,10 +53,10 @@ class CMakeBuild(build_ext):
         # If Current Platform is Windows
         if sys.platform == "win32":
             subprocess.check_call(
-                [R"csrc\scripts\msvc-bash.bat", R"csrc\scripts\build.sh"] + build_args
+                [R"scripts\msvc-bash.bat", R"csrc\scripts\build.sh"] + build_args
             )
         else:
-            subprocess.check_call(["bash", "csrc/scripts/build.sh"] + build_args)
+            subprocess.check_call(["bash", "scripts/build.sh"] + build_args)
         install_args = [
             "--install",
             ext.build_dir,

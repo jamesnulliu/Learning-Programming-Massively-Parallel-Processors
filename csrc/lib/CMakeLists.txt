@@ -17,6 +17,7 @@ target_link_libraries(
     ${LIB_NAME} 
     PUBLIC 
     ${TORCH_LIBRARIES}
+    fmt::fmt
 )
 
 target_compile_definitions(${LIB_NAME} 

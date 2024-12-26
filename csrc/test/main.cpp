@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <torch/torch.h>
+
 auto main(int argc, char** argv) -> int
 {
     testing::InitGoogleTest(&argc, argv);

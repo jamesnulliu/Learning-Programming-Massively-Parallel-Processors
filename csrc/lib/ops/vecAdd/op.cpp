@@ -5,8 +5,8 @@ namespace pmpp::ops
 {
 
 template <>
-void launchVecAdd<fp32_t, Device::CPU>(const fp32_t* a, const fp32_t* b,
-                                       fp32_t* c, size_t n)
+void launchVecAdd<DeviceType::CPU>(const fp32_t* a, const fp32_t* b, fp32_t* c,
+                                   size_t n)
 {
 #pragma omp for
     for (size_t i = 0; i < n; ++i) {

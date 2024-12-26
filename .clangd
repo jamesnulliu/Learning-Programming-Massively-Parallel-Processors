@@ -34,13 +34,13 @@ Diagnostics:
     ]
 
     CheckOptions:
-      readability-identifier-naming.VariableCase: lowerCamelCase
-      readability-identifier-naming.ProtectedMemberCase: lowerCamelCase
-      readability-identifier-naming.PrivateMemberCase: lowerCamelCase
-      readability-identifier-naming.PublicMemberCase: lowerCamelCase
+      readability-identifier-naming.VariableCase: aNy_CasE
+      readability-identifier-naming.ProtectedMemberCase: camelBack
+      readability-identifier-naming.PrivateMemberCase: camelBack
+      readability-identifier-naming.PublicMemberCase: camelBack
       readability-identifier-naming.NamespaceCase: lower_case
-      readability-identifier-naming.EnumCase: lowerCamelCase
+      readability-identifier-naming.EnumCase: camelBack
       readability-identifier-naming.ClassCase: CamelCase
       readability-identifier-naming.StructCase: CamelCase
-      readability-identifier-naming.FunctionCase: lowerCamelCase
-      readability-identifier-naming.ClassMethodCase: lowerCamelCase
+      readability-identifier-naming.FunctionCase: camelBack
+      readability-identifier-naming.ClassMethodCase: camelBack
