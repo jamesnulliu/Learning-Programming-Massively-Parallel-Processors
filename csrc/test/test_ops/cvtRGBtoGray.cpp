@@ -1,6 +1,6 @@
+#include <cuda_runtime_api.h>
 #include <gtest/gtest.h>
 #include <torch/torch.h>
-#include <cuda_runtime_api.h>
 
 #include <pmpp/types/cxx_types.hpp>
 
@@ -25,9 +25,7 @@ TEST(OpTest, CvtRGBtoGray)
 
     EXPECT_TRUE(
         h_gray.equal(d_gray.to(torch::TensorOptions().device(torch::kCPU))));
-    
+
     torch::cuda::synchronize();
     cudaGetLastError();
 }
-
-

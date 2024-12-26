@@ -23,8 +23,8 @@
 namespace pmpp::ops::torch_impl
 {
 
-auto vectorAddCpuImpl(const torch::Tensor& A,
-                         const torch::Tensor& B) -> torch::Tensor
+auto vectorAddCpuImpl(const torch::Tensor& A, const torch::Tensor& B)
+    -> torch::Tensor
 {
     VECTOR_ADD_CHECK(A, B, "CPU");
 
@@ -43,8 +43,8 @@ auto vectorAddCpuImpl(const torch::Tensor& A,
 
     return C;
 }
-auto vectorAddCudaImpl(const torch::Tensor& A,
-                          const torch::Tensor& B) -> torch::Tensor
+auto vectorAddCudaImpl(const torch::Tensor& A, const torch::Tensor& B)
+    -> torch::Tensor
 {
     VECTOR_ADD_CHECK(A, B, "CUDA");
 
