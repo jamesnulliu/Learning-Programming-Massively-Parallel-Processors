@@ -18,6 +18,7 @@ target_link_libraries(
     PUBLIC 
     ${TORCH_LIBRARIES}
     fmt::fmt
+    msft_proxy
 )
 
 target_compile_definitions(${LIB_NAME} 

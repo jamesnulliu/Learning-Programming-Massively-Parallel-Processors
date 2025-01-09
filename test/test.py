@@ -19,6 +19,4 @@ pic_in = pic_in.cuda()
 pic_out_cuda = torch.ops.pmpp.cvt_rgb_to_gray(pic_in)
 print(pic_out_cuda.cpu())
 
-print(torch.equal(pic_out_cuda.cpu(), pic_out_cpu))
 
-torch.randint()

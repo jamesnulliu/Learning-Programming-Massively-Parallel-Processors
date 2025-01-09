@@ -4,6 +4,6 @@ set(VCPKG_LIBRARY_LINKAGE static)
 
 set(VCPKG_CMAKE_SYSTEM_NAME Linux)
 
-# Force old ABI off
+# Forcing the use of the old ABI
 set(ENV{CXXFLAGS} "$ENV{CXXFLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 set(ENV{CFLAGS} "$ENV{CFLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")

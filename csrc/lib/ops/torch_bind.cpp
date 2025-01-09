@@ -1,8 +1,10 @@
-#include "torch_bind.hpp"
+#include <torch/torch.h>
+
+#include "./torch_impl.hpp"
 
 // Define operator `torch.ops.pmpp.vector_add`.
 // @see
-// "https://docs.google.com/document/d/1_W62p8WJOQQUzPsJYa7s701JXt0qf2OfLub2sbkHOaU/edit?tab=t.0#heading=h.fu2gkc7w0nrc"
+//   https://docs.google.com/document/d/1_W62p8WJOQQUzPsJYa7s701JXt0qf2OfLub2sbkHOaU/edit?tab=t.0#heading=h.fu2gkc7w0nrc
 TORCH_LIBRARY(pmpp, m)
 {
     m.def("vector_add(Tensor a, Tensor b) -> Tensor");
@@ -11,15 +13,15 @@ TORCH_LIBRARY(pmpp, m)
 
 // Register the implementation.
 // @see
-// "https://docs.google.com/document/d/1_W62p8WJOQQUzPsJYa7s701JXt0qf2OfLub2sbkHOaU/edit?tab=t.0#heading=h.jc288bcufw9a"
+//   https://docs.google.com/document/d/1_W62p8WJOQQUzPsJYa7s701JXt0qf2OfLub2sbkHOaU/edit?tab=t.0#heading=h.jc288bcufw9a
 TORCH_LIBRARY_IMPL(pmpp, CPU, m)
 {
-    m.impl("vector_add", &::pmpp::ops::torch_impl::vectorAddCpuImpl);
-    m.impl("cvt_rgb_to_gray", &::pmpp::ops::torch_impl::cvtRGBtoGrayCpuImpl);
+    m.impl("vector_add", &pmpp::ops::cpu::torch_impl::vectorAddImpl);
+    m.impl("cvt_rgb_to_gray", &pmpp::ops::cpu::torch_impl::cvtRGBtoGrayImpl);
 }
 
 TORCH_LIBRARY_IMPL(pmpp, CUDA, m)
 {
-    m.impl("vector_add", &::pmpp::ops::torch_impl::vectorAddCudaImpl);
-    m.impl("cvt_rgb_to_gray", &::pmpp::ops::torch_impl::cvtRGBtoGrayCudaImpl);
+    m.impl("vector_add", &pmpp::ops::cuda::torch_impl::vectorAddImpl);
+    m.impl("cvt_rgb_to_gray", &pmpp::ops::cuda::torch_impl::cvtRGBtoGrayImpl);
 }

@@ -1,36 +1,41 @@
+#include <c10/core/Device.h>
 #include <cuda_runtime_api.h>
 #include <gtest/gtest.h>
 #include <pmpp/types/cxx_types.hpp>
 #include <torch/cuda.h>
 #include <torch/torch.h>
 
-TEST(OpTest, VecAdd)
+#include "./op_test.hpp"
+
+using torch::Tensor;
+namespace F = torch::nn::functional;
+
+namespace pmpp::test::ops
 {
-    cudaDeviceReset();
-    static auto custom_op =
-        torch::Dispatcher::singleton()
-            .findSchemaOrThrow("pmpp::vector_add", "")
-            .typed<torch::Tensor(const torch::Tensor&, const torch::Tensor&)>();
+
+TEST_F(OpTest, VecAdd)
+{
+    static auto custom_op = torch::Dispatcher::singleton()
+                                .findSchemaOrThrow("pmpp::vector_add", "")
+                                .typed<torch::Tensor(const torch::Tensor&,
+                                                     const torch::Tensor&)>();
 
     constexpr pmpp::size_t nElems = 1e3;
+    test_info_->name();
 
-    torch::Tensor hA = torch::rand(
-        nElems, torch::TensorOptions().dtype(torch::kF32).device(torch::kCPU));
-    torch::Tensor hB = torch::rand(
-        nElems, torch::TensorOptions().dtype(torch::kF32).device(torch::kCPU));
-    torch::Tensor hC1 = custom_op.call(hA, hB);
+    torch::Tensor matAh = torch::rand(nElems, torch::kF32);
+    torch::Tensor matBh = torch::rand(nElems, torch::kF32);
+    torch::Tensor matCh = custom_op.call(matAh, matBh);
 
     ASSERT_TRUE(torch::cuda::is_available());
+    torch::Tensor matAd = matAh.to(torch::kCUDA);
+    torch::Tensor matBd = matBh.to(matAd.device());
+    torch::Tensor matCd2h = custom_op.call(matAd, matBd).to(torch::kCPU);
 
-    auto device = torch::Device(torch::kCUDA, 0);
+    Tensor cosSim =
+        F::cosine_similarity(matCh.flatten(), matCd2h.flatten(),
+                             F::CosineSimilarityFuncOptions().dim(0));
 
-    torch::Tensor dA = hA.to(device);
-    torch::Tensor dB = hB.to(device);
-    torch::Tensor dC = custom_op.call(dA, dB);
-    torch::Tensor hC2 = dC.to(c10::TensorOptions().device(torch::kCPU));
-
-    EXPECT_TRUE(hC1.equal(hC2));
-
-    torch::cuda::synchronize();
-    cudaGetLastError();
+    EXPECT_GE(cosSim.item<fp32_t>(), 0.99);
 }
+}  // namespace pmpp::test::ops

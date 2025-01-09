@@ -1,43 +1,42 @@
 #include <cuda_runtime.h>
 
-#include "pmpp/ops/cvt_rgb_to_gray.hpp"
+#include "pmpp/types/cxx_types.hpp"
 #include "pmpp/utils/address.hpp"
 #include "pmpp/utils/math.hpp"
 
-namespace pmpp::ops
+namespace pmpp::ops::cuda
 {
 
-__global__ void cvtRGBtoGrayKernel(uint8_t* picOut, const uint8_t* picIn,
-                                   uint32_t width, uint32_t height)
+__global__ void cvtRGBtoGrayKernel(uint8_t* outImg, const uint8_t* inImg,
+                                   uint32_t height, uint32_t width)
 {
     // Suppose each pixel is 3 consecutive chars for the 3 channels (RGB).
     constexpr uint32_t N_CHANNELS = 3;
     // Assign each cuda thread to process one pixel.
-    uint32_t col = threadIdx.x + blockDim.x * blockIdx.x;
-    uint32_t row = threadIdx.y + blockDim.y * blockIdx.y;
+    uint32_t row = threadIdx.x + blockDim.x * blockIdx.x;
+    uint32_t col = threadIdx.y + blockDim.y * blockIdx.y;
 
-    if (col >= width || row >= height) {
+    if (row >= height || col >= width) {
         return;
     }
 
-    auto grayOffset = computeOffset<uint32_t>(col, width, width, height);
+    auto grayOffset = computeOffset<uint32_t>(row, col, height, width);
     uint32_t rgbOffset = grayOffset * N_CHANNELS;
 
-    uint8_t r = picIn[rgbOffset];
-    uint8_t g = picIn[rgbOffset + 1];
-    uint8_t b = picIn[rgbOffset + 2];
+    uint8_t r = inImg[rgbOffset];
+    uint8_t g = inImg[rgbOffset + 1];
+    uint8_t b = inImg[rgbOffset + 2];
 
-    picOut[grayOffset] = uint8_t(0.21F * r + 0.71F * g + 0.07F * b);
+    outImg[grayOffset] = uint8_t(0.21F * r + 0.71F * g + 0.07F * b);
 }
 
-template <>
-void launchCvtRGBtoGray<DeviceType::CUDA>(uint8_t* picOut, const uint8_t* picIn,
-                                          uint32_t width, uint32_t height)
+void launchCvtRGBtoGray(uint8_t* outImg, const uint8_t* inImg, uint32_t nRows,
+                        uint32_t nCols)
 {
-    dim3 blockSize = {256, 256};
-    dim3 gridSize = {ceil(width, 256), ceil(height, 256)};
+    dim3 blockSize = {32, 32};
+    dim3 gridSize = {ceilDiv(nRows, 32), ceilDiv(nCols, 32)};
 
-    cvtRGBtoGrayKernel<<<gridSize, blockSize>>>(picOut, picIn, width, height);
+    cvtRGBtoGrayKernel<<<gridSize, blockSize>>>(outImg, inImg, nRows, nCols);
 }
 
-}  // namespace pmpp::ops
+}  // namespace pmpp::ops::cuda

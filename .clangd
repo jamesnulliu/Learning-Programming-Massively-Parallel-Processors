@@ -1,3 +1,25 @@
+---
+If:
+  PathMatch: [.*\.c, .*\.h]
+CompileFlags:
+  Add: [-xc, -std=c11]
+  Remove: [-xc++, -std=c++*]
+Diagnostics:
+  ClangTidy:
+    Remove:
+      - modernize-*
+      - cppcoreguidelines-*
+      - performance-*
+      - google-*
+      - cert-dcl21-cpp
+      - cert-dcl58-cpp
+      - cert-err58-cpp
+      - misc-new-delete-overloads
+      - misc-non-private-member-variables-in-classes
+      - misc-uniqueptr-reset-release
+---
+If:
+  PathMatch: [.*\.cpp, .*\.cu, .*\.hpp, .*\.cuh]
 CompileFlags:
   Add: 
     - --no-cuda-version-check
@@ -35,9 +57,9 @@ Diagnostics:
 
     CheckOptions:
       readability-identifier-naming.VariableCase: aNy_CasE
-      readability-identifier-naming.ProtectedMemberCase: camelBack
-      readability-identifier-naming.PrivateMemberCase: camelBack
-      readability-identifier-naming.PublicMemberCase: camelBack
+      readability-identifier-naming.ProtectedMemberCase: aNy_CasE
+      readability-identifier-naming.PrivateMemberCase: aNy_CasE
+      readability-identifier-naming.PublicMemberCase: aNy_CasE
       readability-identifier-naming.NamespaceCase: lower_case
       readability-identifier-naming.EnumCase: camelBack
       readability-identifier-naming.ClassCase: CamelCase

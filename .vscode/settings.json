@@ -25,11 +25,14 @@
         "--all-scopes-completion",
         "--completion-style=bundled",
         "--cross-file-rename",
-        "--header-insertion=iwyu",
+        "--header-insertion=never",
         "--header-insertion-decorators",
         "--background-index",
         "-j=8",
         "--pch-storage=memory",
         "--function-arg-placeholders=false",
     ],
+    "black-formatter.args": [
+        "--line-length=79"
+    ]
 }

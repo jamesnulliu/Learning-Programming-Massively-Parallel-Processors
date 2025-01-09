@@ -10,8 +10,6 @@ include_directories(${GTEST_INCLUDE_DIRS})
 target_link_libraries(
     ${TARGET_NAME} PRIVATE
     -Wl,--no-as-needed ${PROJECT_NAMESPACE}pmpp-torch-ops
-    msft_proxy
-    fmt::fmt
     spdlog::spdlog
     GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
 )

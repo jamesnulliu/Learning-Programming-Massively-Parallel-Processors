@@ -21,4 +21,19 @@ concept is_writable_range = is_readable_range<T> && requires(T& t) {
     { std::begin(t) } -> std::output_iterator<std::ranges::range_value_t<T>>;
 };
 
+template <typename T>
+struct GetInnerTypes;
+
+template <template <typename...> class TemplateClass, typename... InnerTypes>
+struct GetInnerTypes<TemplateClass<InnerTypes...>>
+{
+    using inner_types = std::tuple<InnerTypes...>;
+};
+
+template <typename T>
+using GetInnerTypes_t = typename GetInnerTypes<T>::types;
+
+template <typename T, std::size_t N = 0>
+using GetInnerType_t = std::tuple_element_t<N, GetInnerTypes_t<T>>;
+
 }  // namespace pmpp

@@ -5,15 +5,12 @@ cmake_minimum_required(VERSION 3.30)
 project(VSC-CMAKE-CXX-TEMPLATE VERSION 1.0.0)
 
 # Common utility functions
+include(${PROJECT_SOURCE_DIR}/cmake/utils/logging.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/utils/common.cmake)
 
-log_info(${CMAKE_TOOLCHAIN_FILE})
+log_info("CMake Tookchain File Path: ${CMAKE_TOOLCHAIN_FILE}")
 
-# @see "./cmake/utils/variables.cmake"
 set_default_values(
-    # CMake project namespace:
-    # All the libs should have a alias with this namespace
-    # [NOTE] Change this to your own namespace
     PROJECT_NAMESPACE "pmpp::"
     FORCE_COLORED_OUTPUT ON
 )

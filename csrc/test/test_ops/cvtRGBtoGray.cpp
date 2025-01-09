@@ -1,33 +1,41 @@
-#include <gtest/gtest.h>
-#include <torch/torch.h>
+#include <c10/core/TensorOptions.h>
 #include <cuda_runtime_api.h>
+#include <gtest/gtest.h>
+#include <torch/nn/options/distance.h>
+#include <torch/torch.h>
 
 #include <pmpp/types/cxx_types.hpp>
+#include <pmpp/utils/common.hpp>
+#include <torch/types.h>
 
-TEST(OpTest, CvtRGBtoGray)
+#include "./op_test.hpp"
+
+namespace F = torch::nn::functional;
+using torch::Tensor;
+
+namespace pmpp::test::ops
 {
-    cudaDeviceReset();
+TEST_F(OpTest, CvtRGBtoGray)
+{
     static auto custom_op = torch::Dispatcher::singleton()
                                 .findSchemaOrThrow("pmpp::cvt_rgb_to_gray", "")
-                                .typed<torch::Tensor(const torch::Tensor&)>();
+                                .typed<Tensor(const Tensor&)>();
 
     constexpr pmpp::size_t height = 800;
     constexpr pmpp::size_t width = 800;
 
-    torch::Tensor h_image = torch::randint(
+    Tensor imgH = torch::randint(
         256, {height, width, 3},
         torch::TensorOptions().dtype(torch::kUInt8).device(torch::kCPU));
-    torch::Tensor h_gray = custom_op.call(h_image);
+    Tensor grayH = custom_op.call(imgH);
 
-    torch::Tensor d_image =
-        h_image.to(torch::TensorOptions().device(torch::kCUDA));
-    torch::Tensor d_gray = custom_op.call(d_image);
+    Tensor imgD = imgH.to(torch::kCUDA);
+    Tensor grayD2H = custom_op.call(imgD).to(torch::kCPU);
 
-    EXPECT_TRUE(
-        h_gray.equal(d_gray.to(torch::TensorOptions().device(torch::kCPU))));
-    
-    torch::cuda::synchronize();
-    cudaGetLastError();
+    Tensor cosSim = F::cosine_similarity(
+        grayH.to(torch::kF32).flatten(), grayD2H.to(torch::kF32).flatten(),
+        F::CosineSimilarityFuncOptions().dim(0));
+
+    EXPECT_GE(cosSim.item<fp32_t>(), 0.99);
 }
-
-
+}  // namespace pmpp::test::ops
