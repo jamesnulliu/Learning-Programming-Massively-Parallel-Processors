@@ -27,8 +27,8 @@ extern void launchVecAdd(const fp32_t* a, const fp32_t* b, fp32_t* c,
 
 namespace torch_impl
 {
-auto vectorAddImpl(const torch::Tensor& A,
-                   const torch::Tensor& B) -> torch::Tensor
+auto vectorAddImpl(const torch::Tensor& A, const torch::Tensor& B)
+    -> torch::Tensor
 {
     VECTOR_ADD_CHECK(A, B, "CPU");
 
@@ -57,8 +57,8 @@ extern void launchVecAdd(const fp32_t* d_A, const fp32_t* d_B, fp32_t* d_C,
 
 namespace torch_impl
 {
-auto vectorAddImpl(const torch::Tensor& A,
-                   const torch::Tensor& B) -> torch::Tensor
+auto vectorAddImpl(const torch::Tensor& A, const torch::Tensor& B)
+    -> torch::Tensor
 {
     VECTOR_ADD_CHECK(A, B, "CUDA");
 

@@ -215,9 +215,7 @@ class SimpleLM(nn.Module):
             # out: (seq_len, embed_dim)
             # k: (kv_len, embed_dim)
             # v: (kv_len, embed_dim)
-            out, k, v = self.cached_mha(
-                embedded_prompt, self.k_cache, self.v_cache
-            )
+            out, k, v = self.cached_mha(embedded_prompt, self.k_cache, self.v_cache)
 
         # Update k cache and v cache
         # [NOTE]
