@@ -1,4 +1,7 @@
-# Learning *Programming Massively Parallel Processors*
+<div align="center">
+<h1>Learning <i>Programming Massively Parallel Processors</i></h1>
+<img alt="C++20" src="https://img.shields.io/badge/C%2B%2B-20-blue?style=plastic&logo=cplusplus&logoColor=blue"> <img alt="CUDA-12" src="https://img.shields.io/badge/CUDA-12-green?style=plastic&logo=nvidia"> <img alt="Static Badge" src="https://img.shields.io/badge/python-3-blue?style=plastic&logo=python&logoColor=blue"> <img alt="Static Badge" src="https://img.shields.io/badge/pytorch-2-orange?style=plastic&logo=pytorch">
+</div>
 
 ## Quick Start
 
