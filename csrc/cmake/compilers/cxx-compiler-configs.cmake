@@ -11,8 +11,8 @@
 
 include(${PROJECT_SOURCE_DIR}/cmake/utils/common.cmake)
 
-set_default_values(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 enable_language(CXX)
+set_default_values(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 # Generate compile_commands.json in build directory
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

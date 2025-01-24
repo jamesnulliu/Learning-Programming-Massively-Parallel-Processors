@@ -1,5 +1,8 @@
+import math
+from typing import Optional
 import torch
 from torch import nn
+from torch.nn import functional as F
 import numpy as np
 
 
@@ -24,7 +27,13 @@ class MultiHeadAttentionKernel(nn.Module):
         self.num_heads: int = num_heads
         self.head_size: int = embed_dim // num_heads
 
-    def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor):
+    def forward(
+        self,
+        q: torch.Tensor,
+        k: torch.Tensor,
+        v: torch.Tensor,
+        mask: Optional[torch.Tensor] = None,
+    ):
         """
         Calculates softmax(Q @ KT / sqrt(dk)) @ V .
 
@@ -46,30 +55,34 @@ class MultiHeadAttentionKernel(nn.Module):
         """
 
         q_len, kv_len = q.size(0), k.size(0)
-        # q: (num_heads, q_len, head_size)
+        # q -> (num_heads, q_len, head_size)
         q = q.view(q_len, self.num_heads, self.head_size).transpose(0, 1)
-        # k: (num_heads, kv_len, head_size)
+        # k -> (num_heads, kv_len, head_size)
         k = k.view(kv_len, self.num_heads, self.head_size).transpose(0, 1)
-        # v: (num_heads, kv_len, head_size)
+        # v -> (num_heads, kv_len, head_size)
         v = v.view(kv_len, self.num_heads, self.head_size).transpose(0, 1)
-
-        attn_weights = torch.matmul(q, k.transpose(-1, -2)) / torch.sqrt(
-            torch.tensor(self.head_size, dtype=torch.float32)
+        # scores -> (num_heads, q_len, kv_len)
+        scores = torch.matmul(q, k.transpose(-1, -2)) / math.sqrt(
+            self.head_size
         )
-
-        # logits: (num_heads, q_len, kv_len)
-        logits = torch.softmax(attn_weights, dim=-1)
-
-        # out: (num_head, q_len, head_size)
-        out = torch.matmul(logits, v)
-        # out: (q_len, embed_dim)
+        # scores -> (num_heads, q_len, kv_len)
+        scores = scores + mask if mask is not None else scores
+        # scores -> (num_heads, q_len, kv_len)
+        scores = F.softmax(scores, dim=-1)
+        # out -> (num_heads, q_len, head_size)
+        out = torch.matmul(scores, v)
+        # out -> (q_len, num_heads, head_size)
         out = out.transpose(0, 1).reshape(q_len, self.embed_dim)
 
         return out
 
 
 class MultiHeadAttention(nn.Module):
-    def __init__(self, embed_dim: int, num_heads: int):
+    def __init__(
+        self,
+        embed_dim: int,
+        num_heads: int,
+    ):
         super().__init__()
 
         self.embed_dim: int = embed_dim
@@ -82,7 +95,11 @@ class MultiHeadAttention(nn.Module):
 
         self.attn_kernel = MultiHeadAttentionKernel(embed_dim, num_heads)
 
-    def forward(self, seq: torch.Tensor):
+    def forward(
+        self,
+        seq: torch.Tensor,
+        mask: Optional[torch.Tensor] = None,
+    ):
         """
         Parameters
         ----------
@@ -96,15 +113,15 @@ class MultiHeadAttention(nn.Module):
             Attention output, cached K and cached V.
         """
 
-        # q: (seq_len, embed_dim)
+        # q -> (seq_len, embed_dim)
         q = self.Wq(seq)
-        # k: (seq_len, embed_dim)
+        # k -> (seq_len, embed_dim)
         k = self.Wk(seq)
-        # v: (seq_len, embed_dim)
+        # v -> (seq_len, embed_dim)
         v = self.Wv(seq)
 
-        # out: (seq_len, embed_dim)
-        out = self.Wo(self.attn_kernel(q, k, v))
+        # out -> (seq_len, embed_dim)
+        out = self.Wo(self.attn_kernel(q, k, v, mask))
 
         return out, k, v
 
@@ -125,7 +142,10 @@ class CachedMultiHeadAttention(nn.Module):
         self.attn_kernel = MultiHeadAttentionKernel(embed_dim, num_heads)
 
     def forward(
-        self, seq: torch.Tensor, k_cache: torch.Tensor, v_cache: torch.Tensor
+        self,
+        seq: torch.Tensor,
+        k_cache: torch.Tensor,
+        v_cache: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Parameters
@@ -147,19 +167,19 @@ class CachedMultiHeadAttention(nn.Module):
             When decoing, the input seq only has ONE newly generated token.
         """
 
-        # q: (1, embed_dim)
+        # q -> (1, embed_dim)
         q = self.Wq(seq)
-        # k: (1, embed_dim)
+        # k -> (1, embed_dim)
         k = self.Wk(seq)
-        # v: (1, embed_dim)
+        # v -> (1, embed_dim)
         v = self.Wv(seq)
 
-        # k_cache: (kv_len + 1, embed_dim)
+        # k_cache -> (kv_len + 1, embed_dim)
         k_cache = torch.cat([k_cache, k.detach()], dim=0)
-        # v_cache: (kv_len + 1, embed_dim)
+        # v_cache -> (kv_len + 1, embed_dim)
         v_cache = torch.cat([v_cache, v.detach()], dim=0)
 
-        # out: (seq_len, embed_dim)
+        # out -> (seq_len, embed_dim)
         out = self.Wo(self.attn_kernel(q, k_cache, v_cache))
 
         return out, k_cache, v_cache
@@ -189,7 +209,11 @@ class SimpleLM(nn.Module):
         self.k_cache = nn.Buffer(torch.zeros(size=(0, embed_dim)))
         self.v_cache = nn.Buffer(torch.zeros(size=(0, embed_dim)))
 
-    def forward(self, prompt: torch.Tensor, is_prefilling: bool = True):
+    def forward(
+        self,
+        prompt: torch.Tensor,
+        is_prefilling: bool = True,
+    ):
         """
         Parameters
         ----------
@@ -203,19 +227,29 @@ class SimpleLM(nn.Module):
             step, which means `seq_len` should equal to `1`.
         """
 
-        # embedded_prompt: (seq_len, embed_dim)
+        # embedded_prompt -> (seq_len, embed_dim)
         embedded_prompt = self.embed(prompt)
 
         if is_prefilling:
-            # out: (seq_len, embed_dim)
-            # k: (seq_len, embed_dim)
-            # v: (seq_len, embed_dim)
-            out, k, v = self.mha(embedded_prompt)
+            seq_len = prompt.size(0)
+            mask = None
+            if seq_len > 1:
+                mask = torch.full(
+                    (seq_len, seq_len), -float("Inf"), device=prompt.device
+                )
+                mask = torch.triu(mask, diagonal=1)
+            # out -> (seq_len, embed_dim)
+            # k -> (seq_len, embed_dim)
+            # v -> (seq_len, embed_dim)
+            out, k, v = self.mha(embedded_prompt, mask)
         else:
-            # out: (seq_len, embed_dim)
-            # k: (kv_len, embed_dim)
-            # v: (kv_len, embed_dim)
-            out, k, v = self.cached_mha(embedded_prompt, self.k_cache, self.v_cache)
+            assert prompt.size(0) == 1
+            # out -> (seq_len, embed_dim)
+            # k -> (kv_len, embed_dim)
+            # v -> (kv_len, embed_dim)
+            out, k, v = self.cached_mha(
+                embedded_prompt, self.k_cache, self.v_cache
+            )
 
         # Update k cache and v cache
         # [NOTE]
@@ -226,7 +260,7 @@ class SimpleLM(nn.Module):
 
         # Use the last token to calculate the probability of each word in the
         # vocabulary bank:
-        # probs: (vocab_size,)
+        # probs -> (vocab_size,)
         probs = torch.softmax(self.proj_to_vocab(out[-1]), dim=-1)
 
         return probs
