@@ -20,8 +20,10 @@ __global__ void matMulKernel(ScalarT* M, ScalarT* N, ScalarT* P, int32_t Width)
 
     fp32_t Pvalue = 0.0F;
     for (int32_t ph = 0; ph < Width / TILE_SIZE; ++ph) {
-        Mds[threadIdx.y][threadIdx.x] = M[Row * Width + (ph * TILE_SIZE + threadIdx.x)];
-        Nds[threadIdx.y][threadIdx.x] = N[(ph * TILE_SIZE + threadIdx.y) * Width + Col];
+        Mds[threadIdx.y][threadIdx.x] =
+            M[Row * Width + (ph * TILE_SIZE + threadIdx.x)];
+        Nds[threadIdx.y][threadIdx.x] =
+            N[(ph * TILE_SIZE + threadIdx.y) * Width + Col];
         __syncthreads();
 
         for (int32_t k = 0; k < TILE_SIZE; ++k) {

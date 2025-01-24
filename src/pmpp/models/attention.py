@@ -62,9 +62,7 @@ class MultiHeadAttentionKernel(nn.Module):
         # v -> (num_heads, kv_len, head_size)
         v = v.view(kv_len, self.num_heads, self.head_size).transpose(0, 1)
         # scores -> (num_heads, q_len, kv_len)
-        scores = torch.matmul(q, k.transpose(-1, -2)) / math.sqrt(
-            self.head_size
-        )
+        scores = torch.matmul(q, k.transpose(-1, -2)) / math.sqrt(self.head_size)
         # scores -> (num_heads, q_len, kv_len)
         scores = scores + mask if mask is not None else scores
         # scores -> (num_heads, q_len, kv_len)
@@ -247,9 +245,7 @@ class SimpleLM(nn.Module):
             # out -> (seq_len, embed_dim)
             # k -> (kv_len, embed_dim)
             # v -> (kv_len, embed_dim)
-            out, k, v = self.cached_mha(
-                embedded_prompt, self.k_cache, self.v_cache
-            )
+            out, k, v = self.cached_mha(embedded_prompt, self.k_cache, self.v_cache)
 
         # Update k cache and v cache
         # [NOTE]
