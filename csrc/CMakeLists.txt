@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.30)
 
 # Project Name and version
-project(VSC-CMAKE-CXX-TEMPLATE VERSION 1.0.0)
+project(PMPP VERSION 1.0.0)
 
 # Common utility functions
 include(${PROJECT_SOURCE_DIR}/cmake/utils/logging.cmake)

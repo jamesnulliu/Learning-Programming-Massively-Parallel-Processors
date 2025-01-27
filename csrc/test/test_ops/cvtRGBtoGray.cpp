@@ -10,8 +10,8 @@
 
 #include "./op_test.hpp"
 
-namespace F = torch::nn::functional;
 using torch::Tensor;
+namespace F = torch::nn::functional;
 
 namespace pmpp::test::ops
 {

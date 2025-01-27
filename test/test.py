@@ -18,3 +18,9 @@ print(pic_out_cpu)
 pic_in = pic_in.cuda()
 pic_out_cuda = torch.ops.pmpp.cvt_rgb_to_gray(pic_in)
 print(pic_out_cuda.cpu())
+
+print(
+    torch.ops.pmpp.matmul(
+        torch.ones((32, 32)).cuda(), torch.ones((32, 32)).cuda()
+    )
+)

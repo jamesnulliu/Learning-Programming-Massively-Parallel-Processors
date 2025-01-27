@@ -2,8 +2,8 @@
 #include <torch/torch.h>
 #include <torch/types.h>
 
+#include "../ops.hpp"
 #include "../torch_impl.hpp"
-#include "pmpp/types/cxx_types.hpp"
 
 #define VECTOR_ADD_CHECK(A, B, _Device)                                       \
     do {                                                                      \
@@ -20,15 +20,9 @@
                     A.sizes(), " and ", B.sizes(), ".");                      \
     } while (false)
 
-namespace pmpp::ops::cpu
+namespace pmpp::ops::cpu::torch_impl
 {
-extern void launchVecAdd(const fp32_t* a, const fp32_t* b, fp32_t* c,
-                         size_t n);
-
-namespace torch_impl
-{
-auto vectorAddImpl(const torch::Tensor& A, const torch::Tensor& B)
-    -> torch::Tensor
+auto vectorAdd(const torch::Tensor& A, const torch::Tensor& B) -> torch::Tensor
 {
     VECTOR_ADD_CHECK(A, B, "CPU");
 
@@ -47,18 +41,11 @@ auto vectorAddImpl(const torch::Tensor& A, const torch::Tensor& B)
 
     return C;
 }
-}  // namespace torch_impl
-}  // namespace pmpp::ops::cpu
+}  // namespace pmpp::ops::cpu::torch_impl
 
-namespace pmpp::ops::cuda
+namespace pmpp::ops::cuda::torch_impl
 {
-extern void launchVecAdd(const fp32_t* d_A, const fp32_t* d_B, fp32_t* d_C,
-                         size_t n);
-
-namespace torch_impl
-{
-auto vectorAddImpl(const torch::Tensor& A, const torch::Tensor& B)
-    -> torch::Tensor
+auto vectorAdd(const torch::Tensor& A, const torch::Tensor& B) -> torch::Tensor
 {
     VECTOR_ADD_CHECK(A, B, "CUDA");
 
@@ -77,5 +64,4 @@ auto vectorAddImpl(const torch::Tensor& A, const torch::Tensor& B)
 
     return C;
 }
-}  // namespace torch_impl
-}  // namespace pmpp::ops::cuda
+}  // namespace pmpp::ops::cuda::torch_impl

@@ -37,7 +37,8 @@ CompileFlags:
     - -arch=*
 
 Diagnostics:
-  UnusedIncludes: Strict
+  UnusedIncludes: None
+  MissingIncludes: None
 
   ClangTidy:
     Add: [

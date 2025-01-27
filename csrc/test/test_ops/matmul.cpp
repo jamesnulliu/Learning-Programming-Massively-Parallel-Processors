@@ -9,17 +9,19 @@ namespace F = torch::nn::functional;
 namespace pmpp::test::ops
 {
 
-TEST_F(OpTest, VecAdd)
+TEST_F(OpTest, Matmul)
 {
     static auto custom_op = torch::Dispatcher::singleton()
-                                .findSchemaOrThrow("pmpp::vector_add", "")
+                                .findSchemaOrThrow("pmpp::matmul", "")
                                 .typed<torch::Tensor(const torch::Tensor&,
                                                      const torch::Tensor&)>();
 
-    constexpr pmpp::size_t nElems = 1e3;
+    constexpr pmpp::size_t m = 160;
+    constexpr pmpp::size_t n = 160;
+    constexpr pmpp::size_t k = 160;
 
-    torch::Tensor matAh = torch::rand(nElems, torch::kF32);
-    torch::Tensor matBh = torch::rand(nElems, torch::kF32);
+    torch::Tensor matAh = torch::ones({m, n}, torch::kF32);
+    torch::Tensor matBh = torch::ones({n, k}, torch::kF32);
     torch::Tensor matCh = custom_op.call(matAh, matBh);
 
     ASSERT_TRUE(torch::cuda::is_available());
@@ -33,4 +35,5 @@ TEST_F(OpTest, VecAdd)
 
     EXPECT_GE(cosSim.item<fp32_t>(), 0.99);
 }
+
 }  // namespace pmpp::test::ops

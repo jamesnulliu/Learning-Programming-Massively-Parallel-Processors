@@ -9,19 +9,22 @@ TORCH_LIBRARY(pmpp, m)
 {
     m.def("vector_add(Tensor a, Tensor b) -> Tensor");
     m.def("cvt_rgb_to_gray(Tensor img) -> Tensor");
+    m.def("matmul(Tensor A, Tensor B) -> Tensor");
 }
 
-// Register the implementation.
+// Register the implementations.
 // @see
 //   https://docs.google.com/document/d/1_W62p8WJOQQUzPsJYa7s701JXt0qf2OfLub2sbkHOaU/edit?tab=t.0#heading=h.jc288bcufw9a
 TORCH_LIBRARY_IMPL(pmpp, CPU, m)
 {
-    m.impl("vector_add", &pmpp::ops::cpu::torch_impl::vectorAddImpl);
-    m.impl("cvt_rgb_to_gray", &pmpp::ops::cpu::torch_impl::cvtRGBtoGrayImpl);
+    m.impl("vector_add", &pmpp::ops::cpu::torch_impl::vectorAdd);
+    m.impl("cvt_rgb_to_gray", &pmpp::ops::cpu::torch_impl::cvtRGBtoGray);
+    m.impl("matmul", &pmpp::ops::cpu::torch_impl::matmul);
 }
 
 TORCH_LIBRARY_IMPL(pmpp, CUDA, m)
 {
-    m.impl("vector_add", &pmpp::ops::cuda::torch_impl::vectorAddImpl);
-    m.impl("cvt_rgb_to_gray", &pmpp::ops::cuda::torch_impl::cvtRGBtoGrayImpl);
+    m.impl("vector_add", &pmpp::ops::cuda::torch_impl::vectorAdd);
+    m.impl("cvt_rgb_to_gray", &pmpp::ops::cuda::torch_impl::cvtRGBtoGray);
+    m.impl("matmul", &pmpp::ops::cuda::torch_impl::matmul);
 }

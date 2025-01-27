@@ -1,10 +1,6 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../utils/logging.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../utils/run-python.cmake)
 
-set(PY_RESULT)
-set(PY_OUTPUT)
-set(PY_ERROR)
-
 # @see "../utils/python.cmake"
 run_python(
     "import torch;print(torch.utils.cmake_prefix_path)"

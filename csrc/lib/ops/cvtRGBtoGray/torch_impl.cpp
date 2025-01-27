@@ -1,19 +1,13 @@
-#include <ATen/TensorUtils.h>
-#include <ATen/ops/zero.h>
 #include <cstdio>
 #include <cuda_runtime_api.h>
 #include <torch/torch.h>
 
+#include "../ops.hpp"
 #include "../torch_impl.hpp"
-#include "pmpp/types/cxx_types.hpp"
 
-namespace pmpp::ops::cpu
+namespace pmpp::ops::cpu::torch_impl
 {
-extern void launchCvtRGBtoGray(uint8_t* picOut, const uint8_t* picIn,
-                               uint32_t nRows, uint32_t nCols);
-namespace torch_impl
-{
-auto cvtRGBtoGrayImpl(const torch::Tensor& img) -> torch::Tensor
+auto cvtRGBtoGray(const torch::Tensor& img) -> torch::Tensor
 {
     TORCH_CHECK(img.scalar_type() == torch::kUInt8,
                 "Expected in Tensor to have dtype = torch::kUInt8, but have: ",
@@ -32,16 +26,11 @@ auto cvtRGBtoGrayImpl(const torch::Tensor& img) -> torch::Tensor
 
     return imgOut;
 }
-}  // namespace torch_impl
-}  // namespace pmpp::ops::cpu
+}  // namespace pmpp::ops::cpu::torch_impl
 
-namespace pmpp::ops::cuda
+namespace pmpp::ops::cuda::torch_impl
 {
-extern void launchCvtRGBtoGray(uint8_t* picOut, const uint8_t* picIn,
-                               uint32_t nRows, uint32_t nCols);
-namespace torch_impl
-{
-auto cvtRGBtoGrayImpl(const torch::Tensor& img) -> torch::Tensor
+auto cvtRGBtoGray(const torch::Tensor& img) -> torch::Tensor
 {
     TORCH_CHECK(img.scalar_type() == torch::kUInt8,
                 "Expected in Tensor to have dtype = torch::kUInt8, but have: ",
@@ -58,5 +47,4 @@ auto cvtRGBtoGrayImpl(const torch::Tensor& img) -> torch::Tensor
                                         img.data_ptr<uint8_t>(), nRows, nCols);
     return imgOut;
 }
-}  // namespace torch_impl
-}  // namespace pmpp::ops::cuda
+}  // namespace pmpp::ops::cuda::torch_impl
