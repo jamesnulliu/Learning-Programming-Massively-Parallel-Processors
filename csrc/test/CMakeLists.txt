@@ -5,13 +5,14 @@ file(GLOB_RECURSE CUDA_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)
 
 add_executable(${TARGET_NAME} ${CXX_SOURCES} ${CUDA_SOURCES})
 
-include_directories(${GTEST_INCLUDE_DIRS})
-
 target_link_libraries(
     ${TARGET_NAME} PRIVATE
     -Wl,--no-as-needed ${PROJECT_NAMESPACE}pmpp-torch-ops
     spdlog::spdlog
     GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
+    yaml-cpp::yaml-cpp
 )
 
-add_test(AllTestsInMain ${TARGET_NAME})
+add_test(OpTest ${TARGET_NAME})
+
+file(COPY ${PROJECT_SOURCE_DIR}/../configs DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

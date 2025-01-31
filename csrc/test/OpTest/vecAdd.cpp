@@ -1,10 +1,10 @@
 #include <pmpp/types/cxx_types.hpp>
 #include <torch/torch.h>
 
-#include "./op_test.hpp"
+#include "./OpTest.hpp"
 
 using torch::Tensor;
-namespace F = torch::nn::functional;
+namespace f = torch::nn::functional;
 
 namespace pmpp::test::ops
 {
@@ -28,8 +28,8 @@ TEST_F(OpTest, VecAdd)
     torch::Tensor matCd2h = custom_op.call(matAd, matBd).to(torch::kCPU);
 
     Tensor cosSim =
-        F::cosine_similarity(matCh.flatten(), matCd2h.flatten(),
-                             F::CosineSimilarityFuncOptions().dim(0));
+        f::cosine_similarity(matCh.flatten(), matCd2h.flatten(),
+                             f::CosineSimilarityFuncOptions().dim(0));
 
     EXPECT_GE(cosSim.item<fp32_t>(), 0.99);
 }

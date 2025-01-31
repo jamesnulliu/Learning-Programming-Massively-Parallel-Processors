@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cstdio>
-#include <cstdlib>
-#include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
 #include <stdexcept>
 
@@ -34,7 +32,7 @@
         /**
          * @brief Cuda error check is turned off on Release mode.
          */
-        #define PMPP_DEBUG_CUDA_ERR_CHECK(err) ((void) err)
+        #define PMPP_DEBUG_CUDA_ERR_CHECK(err) ((void) 0)
     #else
         /**
          * @brief Check the given cuda error. Exit with `EXIT_FAILURE` if not

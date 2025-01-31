@@ -1,5 +1,3 @@
-#include <cstdio>
-#include <cuda_runtime_api.h>
 #include <torch/torch.h>
 
 #include "../ops.hpp"

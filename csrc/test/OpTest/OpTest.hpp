@@ -6,6 +6,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <torch/torch.h>
+#include <yaml-cpp/yaml.h>
 
 #include <pmpp/utils/common.cuh>
 
@@ -31,6 +32,25 @@ protected:
         static auto logger = spdlog::stdout_color_mt("OpTest");
         return logger;
     }
+
+public:
+    static void setConfigs(const std::string& filePath)
+    {
+        m_configs = std::make_shared<YAML::Node>(YAML::LoadFile(filePath));
+    }
+
+    static void setConfigs(const YAML::Node& configs)
+    {
+        m_configs = std::make_shared<YAML::Node>(configs);
+    }
+
+    [[nodiscard]] static auto getConfigs() -> const YAML::Node&
+    {
+        return *m_configs;
+    }
+
+private:
+    static std::shared_ptr<YAML::Node> m_configs;
 };
 
 }  // namespace pmpp::test::ops

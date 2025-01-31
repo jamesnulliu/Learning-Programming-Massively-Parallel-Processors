@@ -11,7 +11,6 @@ Diagnostics:
       - cppcoreguidelines-*
       - performance-*
       - google-*
-      - cert-dcl21-cpp
       - cert-dcl58-cpp
       - cert-err58-cpp
       - misc-new-delete-overloads
@@ -53,7 +52,8 @@ Diagnostics:
       readability-identifier-length,
       readability-magic-numbers,
       readability-function-cognitive-complexity,
-      modernize-avoid-c-arrays
+      modernize-avoid-c-arrays,
+      readability-math-missing-parentheses,
     ]
 
     CheckOptions:

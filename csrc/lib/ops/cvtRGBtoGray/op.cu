@@ -3,6 +3,7 @@
 #include "pmpp/types/cxx_types.hpp"
 #include "pmpp/utils/address.hpp"
 #include "pmpp/utils/math.hpp"
+#include "pmpp/utils/common.cuh"
 
 namespace pmpp::ops::cuda
 {
@@ -37,6 +38,8 @@ void launchCvtRGBtoGray(uint8_t* outImg, const uint8_t* inImg, uint32_t nRows,
     dim3 gridSize = {ceilDiv(nRows, 32), ceilDiv(nCols, 32)};
 
     cvtRGBtoGrayKernel<<<gridSize, blockSize>>>(outImg, inImg, nRows, nCols);
+
+    PMPP_DEBUG_CUDA_ERR_CHECK(cudaGetLastError());
 }
 
 }  // namespace pmpp::ops::cuda

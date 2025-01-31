@@ -31,6 +31,7 @@ find_package(cxxopts CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(proxy CONFIG REQUIRED)
+find_package(yaml-cpp CONFIG REQUIRED)
 enable_testing()
 find_package(GTest CONFIG REQUIRED)
 
@@ -46,5 +47,5 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/test)
 
 set(CMAKE_CTEST_COMMAND ctest)
 add_custom_target(check 
-    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure --test-dir ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure --test-dir ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS all)

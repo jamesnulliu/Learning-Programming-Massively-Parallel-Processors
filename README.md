@@ -9,6 +9,7 @@ Create a new conda environment:
 
 ```bash
 conda create -n cuda-learn python=3.12
+conda upgrade libstdcxx-ng -c conda-forge
 conda activate cuda-learn
 pip install torch torchvision torchaudio
 ```

@@ -11,11 +11,11 @@ include(${CMAKE_CURRENT_LIST_DIR}/../utils/common.cmake)
 
 try_get_value(CUDA_HOME HINTS CUDA_HOME CUDA_DIR)
 if (NOT CUDA_HOME_FOUND)
-    log_error("ENV:CUDA_HOME is not set.")
+    log_error("CUDA_HOME not set.")
 endif()
 
 # Append the path to the CMAKE_PREFIX_PATH
-set(CUDA_CMAKE_PREFIX_PATH "$CUDA_HOME/lib64/cmake")
+set(CUDA_CMAKE_PREFIX_PATH "${CUDA_HOME}/lib64/cmake")
 list(APPEND CMAKE_PREFIX_PATH ${CUDA_CMAKE_PREFIX_PATH})
 
 # Find the CUDA package

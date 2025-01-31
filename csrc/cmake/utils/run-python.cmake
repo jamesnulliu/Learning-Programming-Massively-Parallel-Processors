@@ -1,5 +1,5 @@
-include(${PROJECT_SOURCE_DIR}/cmake/utils/logging.cmake)
-include(${PROJECT_SOURCE_DIR}/cmake/utils/common.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/logging.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/common.cmake)
 
 
 # @brief Run python command and get result, output and error

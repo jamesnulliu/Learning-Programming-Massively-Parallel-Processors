@@ -2,6 +2,9 @@
 
 set -e  # Exit on error
 
+export CC=gcc
+export CXX=g++
+
 SOURCE_DIR=./csrc
 BUILD_DIR=./build
 BUILD_TYPE=Release
@@ -41,8 +44,7 @@ cmake -S $SOURCE_DIR -B $BUILD_DIR -G Ninja \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_CXX_STANDARD=$CXX_STANDARD \
     -DCMAKE_CUDA_STANDARD=$CUDA_STANDARD  \
-    -DVCPKG_TARGET_TRIPLET="x64-linux-no-cxx11abi" \
+    -DVCPKG_TARGET_TRIPLET="x64-linux" \
     -DVCPKG_OVERLAY_TRIPLETS="csrc/cmake/vcpkg-triplets"
 
-GTEST_COLOR=yes \
 cmake --build $BUILD_DIR -j $(nproc) --target all check

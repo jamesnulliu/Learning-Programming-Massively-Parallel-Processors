@@ -16,7 +16,7 @@
     "[cpp]": {
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
     },
-    "clangd.path": "clangd",
+    "clangd.path": "clangd-20",
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}/build",
         "--log=verbose",

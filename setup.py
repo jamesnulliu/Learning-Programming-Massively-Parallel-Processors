@@ -53,7 +53,9 @@ class CMakeBuild(build_ext):
         # If Current Platform is Windows
         if sys.platform == "win32":
             subprocess.check_call(
-                [R"scripts\msvc-bash.bat", R"csrc\scripts\build.sh"] + build_args
+                [R"scripts\msvc-bash.bat", R"csrc\scripts\build.sh"]
+                + build_args
+                + ["--prune-env-path"]
             )
         else:
             subprocess.check_call(["bash", "scripts/build.sh"] + build_args)
@@ -77,7 +79,7 @@ class BDistWheel(bdist_wheel):
         self.run_command("build_py")
         super().run()
 
-        dist_dir = Path("dist")
+        dist_dir = Path("build", "dist")
         dist_dir.mkdir(exist_ok=True)
 
         wheel_dir = Path(self.dist_dir)
@@ -96,7 +98,11 @@ setup(
             install_dir=TORCH_OPS_DIR,
         )
     ],
-    cmdclass={"build_ext": CMakeBuild, "build_py": BuildPy, "bdist_wheel": BDistWheel},
+    cmdclass={
+        "build_ext": CMakeBuild,
+        "build_py": BuildPy,
+        "bdist_wheel": BDistWheel,
+    },
     packages=find_namespace_packages(where="./src"),
     package_dir={"pmpp": "./src/pmpp"},
     package_data={"pmpp": ["_torch_ops/lib/*.so", "_torch_ops/lib/*.dll"]},

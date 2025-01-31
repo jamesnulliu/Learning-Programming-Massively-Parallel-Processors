@@ -4,6 +4,7 @@
         "fmt",
         "spdlog",
         "proxy",
-        "gtest"
+        "gtest",
+        "yaml-cpp"
     ]
 }
