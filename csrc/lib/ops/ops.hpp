@@ -13,8 +13,8 @@ void launchCvtRGBtoGray(uint8_t* picOut, const uint8_t* picIn, uint32_t nRows,
 void launchMatmul(const fp32_t* A, const fp32_t* B, fp32_t* C, size_t width);
 
 template <typename ScalarT>
-void launchConv2D(const ScalarT* input, const ScalarT* kernel, ScalarT* output,
-                  int32_t inputHeight, int32_t inputWidth, int32_t kernelSize);
+void launchConv2d(const ScalarT* input, const ScalarT* kernel, ScalarT* output,
+                  int32_t inHeight, int32_t inWidth, int32_t kernelSize);
 
 }  // namespace pmpp::ops::cpu
 
@@ -30,7 +30,7 @@ void launchMatmul(const fp32_t* dA, const fp32_t* dB, fp32_t* dC,
                   size_t width);
 
 template <typename ScalarT>
-void launchConv2D(const ScalarT* d_input, const ScalarT* d_kernel,
+void launchConv2d(const ScalarT* d_input, const ScalarT* d_kernel,
                   ScalarT* d_output, int32_t inputHeight, int32_t inputWidth,
                   int32_t kernelSize);
 

@@ -22,7 +22,7 @@ auto conv2D(const torch::Tensor& input, const torch::Tensor& kernel)
 
     switch (input.scalar_type()) {
     case torch::kFloat32: {
-        pmpp::ops::cpu::launchConv2D(input.const_data_ptr<fp32_t>(),
+        pmpp::ops::cpu::launchConv2d(input.const_data_ptr<fp32_t>(),
                                      kernel.const_data_ptr<fp32_t>(),
                                      output.mutable_data_ptr<fp32_t>(),
                                      input_height, input_width, kernel_size);
@@ -56,7 +56,7 @@ auto conv2D(const torch::Tensor& input, const torch::Tensor& kernel)
 
     switch (input.scalar_type()) {
     case torch::kFloat32: {
-        pmpp::ops::cuda::launchConv2D(
+        pmpp::ops::cuda::launchConv2d(
             input.data_ptr<fp32_t>(), kernel.data_ptr<fp32_t>(),
             output.data_ptr<fp32_t>(), input_height, input_width, kernel_size);
         break;

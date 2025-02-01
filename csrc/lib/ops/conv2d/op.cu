@@ -54,7 +54,7 @@ __global__ void conv2DKernel(const ScalarT* input, const ScalarT* kernel,
 }
 
 template <>
-void launchConv2D<fp32_t>(const fp32_t* d_input, const fp32_t* d_kernel,
+void launchConv2d<fp32_t>(const fp32_t* d_input, const fp32_t* d_kernel,
                           fp32_t* d_output, int32_t inputHeight,
                           int32_t inputWidth, int32_t kernelSize)
 {

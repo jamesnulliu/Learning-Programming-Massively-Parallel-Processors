@@ -29,10 +29,11 @@ jobs:
       - name: Install formatter
         shell: bash
         run: |
-          wget https://apt.llvm.org/llvm.sh && chmod +x ./llvm.sh && ./llvm.sh 20
+          wget https://apt.llvm.org/llvm.sh 
+          sudo chmod +x ./llvm.sh && sudo ./llvm.sh 19
           sudo apt-get update
-          sudo apt-get install clang-format-20
-          sudo ln -sf $(which clang-format-20) /usr/bin/clang-format
+          sudo apt-get install clang-format-19
+          sudo ln -sf $(which clang-format-19) /usr/bin/clang-format
           python -m pip install black
 
       - name: Run format script

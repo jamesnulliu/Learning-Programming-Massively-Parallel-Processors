@@ -4,7 +4,7 @@ namespace pmpp::ops::cpu
 {
 
 template <>
-void launchConv2D<fp32_t>(const fp32_t* input, const fp32_t* kernel,
+void launchConv2d<fp32_t>(const fp32_t* input, const fp32_t* kernel,
                           fp32_t* output, int32_t inputHeight,
                           int32_t inputWidth, int32_t kernelSize)
 {
