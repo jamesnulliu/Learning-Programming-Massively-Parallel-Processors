@@ -1,8 +1,8 @@
 #include <cuda_runtime.h>
 
 #include "pmpp/types/cxx_types.hpp"
-#include "pmpp/utils/math.hpp"
 #include "pmpp/utils/common.cuh"
+#include "pmpp/utils/math.hpp"
 
 namespace pmpp::ops::cuda
 {

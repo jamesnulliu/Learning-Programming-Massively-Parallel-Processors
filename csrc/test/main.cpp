@@ -13,9 +13,9 @@ auto main(int argc, char** argv) -> int
 
     cxxopts::Options options("pmpp-test", "Test suite for PMPP");
 
-    options.add_options()("c,config", "Path to the configuration file",
-                          cxxopts::value<std::string>()->default_value(
-                              "configs/ctests.yml"));
+    options.add_options()(
+        "c,config", "Path to the configuration file",
+        cxxopts::value<std::string>()->default_value("configs/ctests.yml"));
     auto optResult = options.parse(argc, argv);
 
     pmpp::test::ops::OpTest::setConfigs(optResult["config"].as<std::string>());
