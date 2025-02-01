@@ -17,12 +17,14 @@ void launchConv2D<fp32_t>(const fp32_t* input, const fp32_t* kernel,
                                  ? inputHeight - 1
                                  : i + kernelSize / 2;
             int32_t endCol = j + kernelSize / 2 >= inputWidth
-                                    ? inputWidth - 1
-                                    : j + kernelSize / 2;
-            
+                                 ? inputWidth - 1
+                                 : j + kernelSize / 2;
+
             for (int32_t k = startRow; k <= endRow; ++k) {
                 for (int32_t l = startCol; l <= endCol; ++l) {
-                    tmp += input[k * inputWidth + l] * kernel[(k - i + kernelSize / 2) * kernelSize + (l - j + kernelSize / 2)];
+                    tmp += input[k * inputWidth + l] *
+                           kernel[(k - i + kernelSize / 2) * kernelSize +
+                                  (l - j + kernelSize / 2)];
                 }
             }
             output[i * inputWidth + j] = tmp;
