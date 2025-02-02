@@ -1,4 +1,4 @@
-set(LIB_NAME "pmpp-torch-ops")
+set(LIB_NAME "PmppTorchOps")
 
 file(GLOB_RECURSE CXX_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE CUDA_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cu)

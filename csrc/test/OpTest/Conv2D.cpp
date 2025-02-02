@@ -13,7 +13,7 @@ TEST_F(OpTest, Conv2D)
     const YAML::Node& configs = getConfigs()["OpTest"]["Conv2D"];
 
     static auto custom_op = torch::Dispatcher::singleton()
-                                .findSchemaOrThrow("pmpp::conv2D", "")
+                                .findSchemaOrThrow("pmpp::conv2d", "")
                                 .typed<Tensor(const Tensor&, const Tensor&)>();
 
     for (auto testConfig : configs) {

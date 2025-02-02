@@ -5,7 +5,7 @@
 
 namespace pmpp::ops::cpu::torch_impl
 {
-auto conv2D(const torch::Tensor& input, const torch::Tensor& kernel)
+auto conv2d(const torch::Tensor& input, const torch::Tensor& kernel)
     -> torch::Tensor
 {
     TORCH_CHECK(input.scalar_type() == kernel.scalar_type(),
@@ -39,7 +39,7 @@ auto conv2D(const torch::Tensor& input, const torch::Tensor& kernel)
 
 namespace pmpp::ops::cuda::torch_impl
 {
-auto conv2D(const torch::Tensor& input, const torch::Tensor& kernel)
+auto conv2d(const torch::Tensor& input, const torch::Tensor& kernel)
     -> torch::Tensor
 {
     TORCH_CHECK(input.scalar_type() == kernel.scalar_type(),

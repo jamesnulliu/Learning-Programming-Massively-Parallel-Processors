@@ -1,0 +1,5 @@
+OpTest:
+  Conv2D:
+    - inputHeight: 32
+      inputWidth: 32
+      kernelSize: 3

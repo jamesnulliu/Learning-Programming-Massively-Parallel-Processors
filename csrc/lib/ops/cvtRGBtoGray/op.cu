@@ -21,7 +21,7 @@ __global__ void cvtRGBtoGrayKernel(uint8_t* outImg, const uint8_t* inImg,
         return;
     }
 
-    auto grayOffset = computeOffset<uint32_t>(row, col, height, width);
+    auto grayOffset = offset<uint32_t>(row, col, height, width);
     uint32_t rgbOffset = grayOffset * N_CHANNELS;
 
     uint8_t r = inImg[rgbOffset];

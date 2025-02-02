@@ -7,7 +7,7 @@ add_executable(${TARGET_NAME} ${CXX_SOURCES} ${CUDA_SOURCES})
 
 target_link_libraries(
     ${TARGET_NAME} PRIVATE
-    -Wl,--no-as-needed ${PROJECT_NAMESPACE}pmpp-torch-ops
+    -Wl,--no-as-needed ${PROJECT_NAMESPACE}PmppTorchOps
     spdlog::spdlog
     GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
     yaml-cpp::yaml-cpp
