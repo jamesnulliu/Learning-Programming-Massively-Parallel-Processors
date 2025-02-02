@@ -19,10 +19,10 @@ namespace pmpp
  *             dimension.
  * @return std::uint32_t The offset of the multi-dimensional array.
  *
- * @example 
+ * @example
  *   1. To calculate the offset of idx (2, 1) in a 2D array of dim (4, 3):
  *      > offset(2, 1, 4, 3) -> 1*1 + 2*3 = 7
- *   2. To calculate the offset of idx (1, 2, 3) in a 3D array of dim 
+ *   2. To calculate the offset of idx (1, 2, 3) in a 3D array of dim
  *      (4, 5, 6):
  *      > offset(1, 2, 3, 4, 5, 6) -> 3*1 + 2*6 + 1*6*5 = 45
  */
