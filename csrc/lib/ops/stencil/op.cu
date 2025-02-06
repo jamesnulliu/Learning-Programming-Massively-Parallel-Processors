@@ -69,8 +69,6 @@ void launchStencil3d(const fp32_t* input, fp32_t* output, dim3 shape,
     dim3 gridDim = {ceilDiv(shape.x, BLOCK_DIM.x),
                     ceilDiv(shape.y, BLOCK_DIM.y),
                     ceilDiv(shape.z, BLOCK_DIM.z)};
-    
-    
 
     stencilKernel<fp32_t, BLOCK_DIM>
         <<<gridDim, BLOCK_DIM>>>(input, output, shape, coeffs);

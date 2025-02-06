@@ -14,7 +14,7 @@ namespace pmpp
 {
 /**
  * @brief Compute the offset of a multi-dimensional array.
- *   A typical use case is that if you have rowIdx, colIdx, nRows and nCols, 
+ *   A typical use case is that if you have rowIdx, colIdx, nRows and nCols,
  *   to calculate the linear index of the element at (rowIdx, colIdx), you can
  *   use this function as follows:
  *   > offset(rowIdx, colIdx, nRows, nCols)
@@ -23,7 +23,7 @@ namespace pmpp
  *             dimension.
  * @return std::uint32_t The offset of the multi-dimensional array.
  *
- * @example 
+ * @example
  *   1. To calculate the offset of idx (2, 1) in a 2D array of dim (4, 3):
  *      > offset(2, 1, 4, 3) -> 1*1 + 2*3 = 7
  *   2. To calculate the offset of idx (1, 2, 3) in a 3D array of dim
