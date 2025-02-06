@@ -11,6 +11,7 @@ TORCH_LIBRARY(pmpp, m)
     m.def("cvt_rgb_to_gray(Tensor img) -> Tensor");
     m.def("matmul(Tensor A, Tensor B) -> Tensor");
     m.def("conv2d(Tensor input, Tensor kernel) -> Tensor");
+    m.def("alphabet_histogram(Tensor input, int divider) -> Tensor");
 }
 
 // Register the implementations.
@@ -22,6 +23,8 @@ TORCH_LIBRARY_IMPL(pmpp, CPU, m)
     m.impl("cvt_rgb_to_gray", &pmpp::ops::cpu::torch_impl::cvtRGBtoGray);
     m.impl("matmul", &pmpp::ops::cpu::torch_impl::matmul);
     m.impl("conv2d", &pmpp::ops::cpu::torch_impl::conv2d);
+    m.impl("alphabet_histogram",
+           &pmpp::ops::cpu::torch_impl::alphabetHistogram);
 }
 
 TORCH_LIBRARY_IMPL(pmpp, CUDA, m)
@@ -30,4 +33,6 @@ TORCH_LIBRARY_IMPL(pmpp, CUDA, m)
     m.impl("cvt_rgb_to_gray", &pmpp::ops::cuda::torch_impl::cvtRGBtoGray);
     m.impl("matmul", &pmpp::ops::cuda::torch_impl::matmul);
     m.impl("conv2d", &pmpp::ops::cuda::torch_impl::conv2d);
+    m.impl("alphabet_histogram",
+           &pmpp::ops::cuda::torch_impl::alphabetHistogram);
 }

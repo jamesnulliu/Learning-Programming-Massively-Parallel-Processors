@@ -42,3 +42,14 @@
         #define PMPP_DEBUG_CUDA_ERR_CHECK(err) PMPP_CUDA_ERR_CHECK(err)
     #endif
 #endif
+
+namespace pmpp::cuda
+{
+template <typename T>
+__host__ __device__ void initMemory(T* ptr, size_t n, const T& val)
+{
+    for (size_t i = 0; i < n; ++i) {
+        ptr[i] = val;
+    }
+}
+}  // namespace pmpp::cuda

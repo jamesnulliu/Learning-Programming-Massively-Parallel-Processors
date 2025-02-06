@@ -21,6 +21,7 @@ If:
   PathMatch: [.*\.cpp, .*\.cu, .*\.hpp, .*\.cuh]
 CompileFlags:
   Add: 
+    - -std=c++20
     - --no-cuda-version-check
   Remove:
     - -ccbin

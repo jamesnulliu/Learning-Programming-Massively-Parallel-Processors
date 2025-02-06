@@ -3,3 +3,8 @@ OpTest:
     - inputHeight: 32
       inputWidth: 32
       kernelSize: 3
+  AlphabetHistogram:
+    - nInputs: 256
+      divider: 4
+    - nInputs: 2048
+      divider: 4

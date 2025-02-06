@@ -15,6 +15,9 @@ auto matmul(const torch::Tensor& A, const torch::Tensor& B) -> torch::Tensor;
 auto conv2d(const torch::Tensor& input, const torch::Tensor& kernel)
     -> torch::Tensor;
 
+auto alphabetHistogram(const torch::Tensor& input, int64_t divider)
+    -> torch::Tensor;
+
 }  // namespace pmpp::ops::cpu::torch_impl
 
 namespace pmpp::ops::cuda::torch_impl
@@ -28,6 +31,9 @@ auto cvtRGBtoGray(const torch::Tensor& img) -> torch::Tensor;
 auto matmul(const torch::Tensor& A, const torch::Tensor& B) -> torch::Tensor;
 
 auto conv2d(const torch::Tensor& input, const torch::Tensor& kernel)
+    -> torch::Tensor;
+
+auto alphabetHistogram(const torch::Tensor& input, int64_t divider)
     -> torch::Tensor;
 
 }  // namespace pmpp::ops::cuda::torch_impl

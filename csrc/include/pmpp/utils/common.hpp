@@ -21,4 +21,12 @@ auto arr2str(const ArrT& arr) -> std::string
     return str;
 }
 
+template <typename T>
+void initMemory(T* ptr, size_t n, const T& val)
+{
+    for (size_t i = 0; i < n; ++i) {
+        ptr[i] = val;
+    }
+}
+
 }  // namespace pmpp
