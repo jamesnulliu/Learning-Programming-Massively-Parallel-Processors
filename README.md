@@ -3,16 +3,15 @@
 <img alt="C++20" src="https://img.shields.io/badge/C%2B%2B-20-blue?style=plastic&logo=cplusplus&logoColor=blue"> <img alt="CUDA-12" src="https://img.shields.io/badge/CUDA-12-green?style=plastic&logo=nvidia"> <img alt="Static Badge" src="https://img.shields.io/badge/python-3-blue?style=plastic&logo=python&logoColor=blue"> <img alt="Static Badge" src="https://img.shields.io/badge/pytorch-2-orange?style=plastic&logo=pytorch">
 </div>
 
-## Environment
+## 1. Environment
 
-The simplest way is to use my docker image {{<href text="jamesnulliu/deeplearning:latest" url="https://hub.docker.com/r/jamesnulliu/deeplearning">}} which contains all the softwares you need to build the project:
+The simplest way is to use my docker image [jamesnulliu/deeplearning:latest](https://hub.docker.com/r/jamesnulliu/deeplearning) which contains all the softwares you need to build the project:
 
 ```bash
 docker pull jamesnulliu/deeplearning:latest
 ```
 
-> 📝**NOTE**  
-> Check my blog: [Docker Container with Nvidia GPU Support](/blogs/docker-container-with-nvidia-gpu-support) if you need any help.
+> Check my blog: [Docker Container with Nvidia GPU Support](https://jamesnulliu.github.io/blogs/docker-container-with-nvidia-gpu-support) if you need any help.
 
 Or if you are planing to build your own environment, here are some tips:
 
@@ -24,11 +23,11 @@ You should install all the softwares with corresponding versions listed bellow:
 - Ninja
 - vcpkg, pkg-config
 - [managed by conda] python >= 3.10, pytorch >= 2.0
-- [managed by vcpkg] cxxopts, fmt, spdlog, proxy, gtest, yamel-cpp
+- [managed by vcpkg] cxxopts, fmt, spdlog, proxy, gtest, yaml-cpp
 
 **🎯Miniconda**
 
-Managing python environment with miniconda is always a good choice. Check [the official website](https://docs.anaconda.com/miniconda/install/#quick-command-line-install) for an installation guide.
+Managing python environments with miniconda is always a good choice. Check [the official website](https://docs.anaconda.com/miniconda/install/#quick-command-line-install) for an installation guide.
 
 After installation, if you do not intend to install all the packages in `base` environment, create a new conda environment named `PMPP` (or whatever you like) and activate it:
 
@@ -36,7 +35,9 @@ After installation, if you do not intend to install all the packages in `base` e
 # python version should be larger than 3.10
 conda create -n PMPP python=3.12
 conda activate PMPP  # Activate this environment
-# In my experience, when your system gcc version is larger than 12, it is highly possible that you have to update libstd++ in conda for running the later compiled targets. All you need to do is to run this command:
+# In my experience, when your system gcc version is larger than 12, it is
+# highly possible that you have to update libstd++ in conda for running the
+# later compiled targets. All you need to do is to run this command:
 conda upgrade libstdcxx-ng -c conda-forge
 ```
 
@@ -56,7 +57,7 @@ You can find all versions of cuda on [the official website](https://developer.nv
 > 📝**NOTE**  
 > Installing and using multiple versions of cuda is possible by managing the `PATH` and `LD_LIBRARY_PATH` environment variables on linux, and you can do this manually or refering to my methods in [this blog](/blogs/environment-variable-management).
 
-## Quick Start
+## 2. Quick Start
 
 To build the C++ part only:
 
@@ -83,7 +84,7 @@ GTEST_COLOR=yes cmake --build $BUILD_DIR -j $(nproc) --target all check
 GTEST_COLOR=yes cmake --build $BUILD_DIR -j $(nproc) --target check
 ```
 
-To build and install the python package `pmpp` in current activated conda environment (pmpp operator library would be built automatically if has not been built):
+To build and install the python package `pmpp` in current activated conda environment (pmpp operator library would be built automatically if it has not been built yet):
 
 ```bash
 pip3 install --no-build-isolation -v .
