@@ -1,1 +1,0 @@
-build/test/pmpp_test $@

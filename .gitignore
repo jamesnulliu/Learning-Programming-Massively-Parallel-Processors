@@ -162,11 +162,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-# Ignore installation directory
-/src/pmpp/_torch_ops/include
-/src/pmpp/_torch_ops/lib/*
-!**/__init__.py
-
-!csrc/lib
-
+/src/pmpp/_torch_ops
 vcpkg_installed
+/tmp
