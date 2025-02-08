@@ -13,7 +13,7 @@ docker pull jamesnulliu/deeplearning:latest
 
 > Check my blog: [Docker Container with Nvidia GPU Support](https://jamesnulliu.github.io/blogs/docker-container-with-nvidia-gpu-support) if you need any help.
 
-Or if you are planing to build your own environment, here are some tips:
+Or if you are planing to setup your own environment, here are some tips:
 
 You should install all the softwares with corresponding versions listed bellow:
 
