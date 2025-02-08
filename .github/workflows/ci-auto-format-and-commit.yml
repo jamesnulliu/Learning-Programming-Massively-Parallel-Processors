@@ -28,9 +28,12 @@ jobs:
 
       - name: Install formatter
         shell: bash
+        # [TODO] It seems like ubuntu-latest (24.04) in github actions does not 
+        #        have llvm-20 in the apt repository yet. I will change the 
+        #        version to 20 when it is available.
         run: |
           wget https://apt.llvm.org/llvm.sh 
-          sudo chmod +x ./llvm.sh && sudo ./llvm.sh 19
+          sudo chmod +x ./llvm.sh && sudo ./llvm.sh 19 && rm ./llvm.sh
           sudo apt-get update
           sudo apt-get install clang-format-19
           sudo ln -sf $(which clang-format-19) /usr/bin/clang-format
