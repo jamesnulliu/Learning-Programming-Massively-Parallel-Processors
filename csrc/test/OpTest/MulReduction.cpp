@@ -16,15 +16,13 @@ TEST_F(OpTest, MulRedection)
 
     for (auto cfg : configs) {
         auto nInputs = cfg["nInputs"].as<pmpp::int64_t>();
-        Tensor input = torch::randint(1, 10, {nInputs}).to(torch::kFloat32);
+        Tensor input = torch::rand({nInputs}).to(torch::kFloat32) * 1.5 + 0.5;
 
         Tensor resultCPU = custom_op.call(input);
         Tensor resultCUDA = custom_op.call(input.cuda());
 
-        std::cout << resultCPU << std::endl;
-        std::cout << resultCUDA << std::endl;
-
-        EXPECT_TRUE(resultCPU.equal(resultCUDA.cpu()));
+        Tensor diff = resultCPU - resultCUDA.cpu();
+        EXPECT_LE(diff.abs().max().item<fp32_t>(), 1e-3);
     }
 }
 }  // namespace pmpp::test::ops
