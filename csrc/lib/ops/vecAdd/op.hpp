@@ -14,7 +14,8 @@ void launchVecAdd(const fp32_t* a, const fp32_t* b, fp32_t* c, size_t n)
 
 namespace torch_impl
 {
-inline auto vectorAdd(const torch::Tensor& A, const torch::Tensor& B) -> torch::Tensor
+inline auto vectorAdd(const torch::Tensor& A, const torch::Tensor& B)
+    -> torch::Tensor
 {
     torch::Tensor C = torch::zeros_like(A);
 
@@ -31,5 +32,5 @@ inline auto vectorAdd(const torch::Tensor& A, const torch::Tensor& B) -> torch::
 
     return C;
 }
-}
+}  // namespace torch_impl
 }  // namespace pmpp::ops::cpu

@@ -18,7 +18,8 @@ void launchMatmul(const fp32_t* A, const fp32_t* B, fp32_t* C, size_t m)
 
 namespace torch_impl
 {
-inline auto matmul(const torch::Tensor& A, const torch::Tensor& B) -> torch::Tensor
+inline auto matmul(const torch::Tensor& A, const torch::Tensor& B)
+    -> torch::Tensor
 {
     torch::Tensor C = torch::empty({A.size(0), B.size(1)}, A.options());
 
@@ -35,5 +36,5 @@ inline auto matmul(const torch::Tensor& A, const torch::Tensor& B) -> torch::Ten
 
     return C;
 }
-}
+}  // namespace torch_impl
 }  // namespace pmpp::ops::cpu

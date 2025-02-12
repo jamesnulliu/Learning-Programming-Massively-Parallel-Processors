@@ -24,8 +24,10 @@ inline auto mulReduction(const torch::Tensor& in) -> torch::Tensor
 
     switch (in.scalar_type()) {
     case torch::kFloat32: {
-        result = torch::tensor(launchReduction(mutableIn.mutable_data_ptr<fp32_t>(), in.numel(),
-                        std::multiplies<>()), in.options());
+        result =
+            torch::tensor(launchReduction(mutableIn.mutable_data_ptr<fp32_t>(),
+                                          in.numel(), std::multiplies<>()),
+                          in.options());
         break;
     }
     default: {

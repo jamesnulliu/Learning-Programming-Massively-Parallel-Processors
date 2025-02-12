@@ -75,8 +75,10 @@ void launchMatmul(const fp32_t* dA, const fp32_t* dB, fp32_t* dC, size_t width)
     PMPP_DEBUG_CUDA_ERR_CHECK(cudaGetLastError());
 }
 
-namespace torch_impl{
-inline auto matmul(const torch::Tensor& A, const torch::Tensor& B) -> torch::Tensor
+namespace torch_impl
+{
+inline auto matmul(const torch::Tensor& A, const torch::Tensor& B)
+    -> torch::Tensor
 {
     torch::Tensor C = torch::empty({A.size(0), B.size(1)}, A.options());
 
@@ -93,5 +95,5 @@ inline auto matmul(const torch::Tensor& A, const torch::Tensor& B) -> torch::Ten
 
     return C;
 }
-}
+}  // namespace torch_impl
 }  // namespace pmpp::ops::cuda

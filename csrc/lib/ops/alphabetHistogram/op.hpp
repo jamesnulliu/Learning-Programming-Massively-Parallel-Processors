@@ -1,7 +1,6 @@
 #pragma once
 #include "pmpp/pch.hpp"
 
-
 namespace pmpp::ops::cpu
 {
 template <typename ScalarT>

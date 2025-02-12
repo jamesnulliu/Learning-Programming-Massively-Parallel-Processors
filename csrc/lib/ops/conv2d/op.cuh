@@ -9,7 +9,7 @@ namespace pmpp::ops::cuda
 {
 static constexpr int32_t MAX_CONV2D_KERNEL_SIZE = 9;
 static __constant__ fp32_t
-        KERNEL[MAX_CONV2D_KERNEL_SIZE * MAX_CONV2D_KERNEL_SIZE];
+    KERNEL[MAX_CONV2D_KERNEL_SIZE * MAX_CONV2D_KERNEL_SIZE];
 
 template <typename ScalarT, uint32_t TILE_SIZE = 32>
 __global__ void conv2DKernel(const ScalarT* input, const ScalarT* kernel,
