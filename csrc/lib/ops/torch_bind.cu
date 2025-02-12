@@ -1,4 +1,4 @@
-#include <torch/torch.h>
+#include "pmpp/pch.hpp"
 
 #include "./torch_impl.hpp"
 
@@ -12,6 +12,7 @@ TORCH_LIBRARY(pmpp, m)
     m.def("matmul(Tensor A, Tensor B) -> Tensor");
     m.def("conv2d(Tensor input, Tensor kernel) -> Tensor");
     m.def("alphabet_histogram(Tensor input, int divider) -> Tensor");
+    m.def("mul_reduction(Tensor input) -> Tensor");
 }
 
 // Register the implementations.
@@ -25,6 +26,7 @@ TORCH_LIBRARY_IMPL(pmpp, CPU, m)
     m.impl("conv2d", &pmpp::ops::cpu::torch_impl::conv2d);
     m.impl("alphabet_histogram",
            &pmpp::ops::cpu::torch_impl::alphabetHistogram);
+    m.impl("mul_reduction", &pmpp::ops::cpu::torch_impl::mulReduction);
 }
 
 TORCH_LIBRARY_IMPL(pmpp, CUDA, m)
@@ -35,4 +37,5 @@ TORCH_LIBRARY_IMPL(pmpp, CUDA, m)
     m.impl("conv2d", &pmpp::ops::cuda::torch_impl::conv2d);
     m.impl("alphabet_histogram",
            &pmpp::ops::cuda::torch_impl::alphabetHistogram);
+    m.impl("mul_reduction", &pmpp::ops::cuda::torch_impl::mulReduction);
 }

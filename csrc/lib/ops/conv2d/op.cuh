@@ -1,15 +1,15 @@
-#include <cuda_runtime.h>
+#pragma once
+#include "pmpp/pch.hpp"
 
-#include "../ops.hpp"
 #include "pmpp/utils/address.hpp"
 #include "pmpp/utils/common.cuh"
 #include "pmpp/utils/math.hpp"
 
 namespace pmpp::ops::cuda
 {
-
-constexpr int32_t MAX_CONV2D_KERNEL_SIZE = 9;
-__constant__ fp32_t KERNEL[MAX_CONV2D_KERNEL_SIZE * MAX_CONV2D_KERNEL_SIZE];
+static constexpr int32_t MAX_CONV2D_KERNEL_SIZE = 9;
+static __constant__ fp32_t
+        KERNEL[MAX_CONV2D_KERNEL_SIZE * MAX_CONV2D_KERNEL_SIZE];
 
 template <typename ScalarT, uint32_t TILE_SIZE = 32>
 __global__ void conv2DKernel(const ScalarT* input, const ScalarT* kernel,
@@ -66,10 +66,10 @@ __global__ void conv2DKernel(const ScalarT* input, const ScalarT* kernel,
     }
 }
 
-template <>
-void launchConv2d<fp32_t>(const fp32_t* d_input, const fp32_t* d_kernel,
-                          fp32_t* d_output, int32_t inputHeight,
-                          int32_t inputWidth, int32_t kernelSize)
+template <typename ScalarT>
+void launchConv2d(const ScalarT* d_input, const ScalarT* d_kernel,
+                  ScalarT* d_output, int32_t inputHeight, int32_t inputWidth,
+                  int32_t kernelSize)
 {
     if (kernelSize > MAX_CONV2D_KERNEL_SIZE) {
         throw std::runtime_error("Kernel size is too large");
@@ -86,4 +86,37 @@ void launchConv2d<fp32_t>(const fp32_t* d_input, const fp32_t* d_kernel,
 
     PMPP_DEBUG_CUDA_ERR_CHECK(cudaGetLastError());
 }
+
+namespace torch_impl
+{
+inline auto conv2d(const torch::Tensor& input, const torch::Tensor& kernel)
+    -> torch::Tensor
+{
+    TORCH_CHECK(input.scalar_type() == kernel.scalar_type(),
+                "Expected input and kernel to have the same dtype, but got "
+                "input.dtype = ",
+                torch::toString(input.scalar_type()),
+                " and kernel.dtype = ", torch::toString(kernel.scalar_type()));
+
+    auto input_height = input.size(0);
+    auto input_width = input.size(1);
+    auto kernel_size = kernel.size(0);
+
+    torch::Tensor output = torch::zeros_like(input);
+
+    switch (input.scalar_type()) {
+    case torch::kFloat32: {
+        pmpp::ops::cuda::launchConv2d(
+            input.data_ptr<fp32_t>(), kernel.data_ptr<fp32_t>(),
+            output.data_ptr<fp32_t>(), input_height, input_width, kernel_size);
+        break;
+    }
+    default: {
+        AT_ERROR("Unsupported dtype: ", input.dtype());
+    }
+    }
+
+    return output;
+}
+}  // namespace torch_impl
 }  // namespace pmpp::ops::cuda

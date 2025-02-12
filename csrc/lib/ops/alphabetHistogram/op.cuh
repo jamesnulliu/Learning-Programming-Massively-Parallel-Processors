@@ -1,13 +1,14 @@
-#include <algorithm>
-#include <cuda_runtime.h>
+#pragma once
+#include "pmpp/pch.hpp"
 
-#include "../ops.hpp"
 #include "pmpp/utils/common.cuh"
 #include "pmpp/utils/math.hpp"
 
 namespace pmpp::ops::cuda
 {
-__global__ void alphabetHistogramKernel(const int32_t* input, int32_t* histo,
+template <typename ScalarT>
+    requires std::is_integral_v<ScalarT>
+__global__ void alphabetHistogramKernel(const ScalarT* input, ScalarT* histo,
                                         int32_t nInputs, int32_t divider)
 {
     constexpr auto MAX_N_BINS = 26;
@@ -54,13 +55,39 @@ __global__ void alphabetHistogramKernel(const int32_t* input, int32_t* histo,
     }
 }
 
-template <>
-void launchAlphabetHistogram<int32_t>(const int32_t* d_input, int32_t* d_histo,
-                                      int32_t nInputs, int32_t divider)
+template <typename ScalarT>
+    requires std::is_integral_v<ScalarT>
+void launchAlphabetHistogram(const ScalarT* d_input, ScalarT* d_histo,
+                             int32_t nInputs, int32_t divider)
 {
     constexpr dim3 blockDim = {1024, 1, 1};
     dim3 gridDim = {uint32_t(ceilDiv(nInputs, blockDim.x)), 1, 1};
     alphabetHistogramKernel<<<gridDim, blockDim>>>(d_input, d_histo, nInputs,
                                                    divider);
+    PMPP_DEBUG_CUDA_ERR_CHECK(cudaGetLastError());
 }
+
+namespace torch_impl
+{
+inline auto alphabetHistogram(const torch::Tensor& input, int64_t divider)
+    -> torch::Tensor
+{
+    auto nInputs = input.numel();
+    auto histo = torch::zeros({26 / divider}, torch::kInt32);
+
+    switch (input.scalar_type()) {
+    case torch::kInt32: {
+        pmpp::ops::cuda::launchAlphabetHistogram<int32_t>(
+            input.data_ptr<int32_t>(), histo.data_ptr<int32_t>(), nInputs,
+            int32_t(divider));
+        break;
+    }
+    default: {
+        AT_ERROR("Unsupported dtype: ", input.dtype());
+    }
+    }
+
+    return histo;
+}
+}  // namespace torch_impl
 }  // namespace pmpp::ops::cuda

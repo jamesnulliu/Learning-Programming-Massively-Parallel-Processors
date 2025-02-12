@@ -10,6 +10,7 @@ namespace pmpp::test::ops
 {
 TEST_F(OpTest, Conv2D)
 {
+    std::cout.rdbuf(std::cout.rdbuf());
     const YAML::Node& configs = getConfigs()["OpTest"]["Conv2D"];
 
     static auto custom_op = torch::Dispatcher::singleton()

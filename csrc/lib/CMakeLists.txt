@@ -13,9 +13,16 @@ target_include_directories(
     $<INSTALL_INTERFACE:include>
 )
 
+target_precompile_headers(
+    ${LIB_NAME} PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/pmpp/pch.hpp>
+    $<INSTALL_INTERFACE:include/pmpp/pch.hpp>
+)
+
 target_link_libraries(
     ${LIB_NAME} 
     PUBLIC 
+    Python::Python
     ${TORCH_LIBRARIES}
     fmt::fmt
     msft_proxy

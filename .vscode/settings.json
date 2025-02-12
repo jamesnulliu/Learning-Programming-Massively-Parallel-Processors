@@ -28,7 +28,7 @@
         "--header-insertion=never",
         "--header-insertion-decorators",
         "--background-index",
-        // "-j=8",
+        "-j=16",
         "--pch-storage=memory",
         "--function-arg-placeholders=false",
     ],

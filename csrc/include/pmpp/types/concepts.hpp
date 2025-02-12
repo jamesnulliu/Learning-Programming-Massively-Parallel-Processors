@@ -2,6 +2,7 @@
 
 #include <iterator>
 #include <ranges>
+#include <type_traits>
 
 namespace pmpp
 {

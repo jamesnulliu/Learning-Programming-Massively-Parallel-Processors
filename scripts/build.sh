@@ -48,4 +48,4 @@ cmake -S $SOURCE_DIR -B $BUILD_DIR -G Ninja \
     -DVCPKG_OVERLAY_TRIPLETS="csrc/cmake/vcpkg-triplets"
 
 GTEST_COLOR=yes \
-cmake --build $BUILD_DIR -j $(nproc) --target all check
+cmake --build $BUILD_DIR --parallel 16 --target all check

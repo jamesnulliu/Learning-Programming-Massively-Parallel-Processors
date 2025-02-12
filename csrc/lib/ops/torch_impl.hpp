@@ -1,39 +1,14 @@
 #pragma once
 
-#include <torch/torch.h>
-
-namespace pmpp::ops::cpu::torch_impl
-{
-
-auto vectorAdd(const torch::Tensor& A, const torch::Tensor& B)
-    -> torch::Tensor;
-
-auto cvtRGBtoGray(const torch::Tensor& img) -> torch::Tensor;
-
-auto matmul(const torch::Tensor& A, const torch::Tensor& B) -> torch::Tensor;
-
-auto conv2d(const torch::Tensor& input, const torch::Tensor& kernel)
-    -> torch::Tensor;
-
-auto alphabetHistogram(const torch::Tensor& input, int64_t divider)
-    -> torch::Tensor;
-
-}  // namespace pmpp::ops::cpu::torch_impl
-
-namespace pmpp::ops::cuda::torch_impl
-{
-
-auto vectorAdd(const torch::Tensor& A, const torch::Tensor& B)
-    -> torch::Tensor;
-
-auto cvtRGBtoGray(const torch::Tensor& img) -> torch::Tensor;
-
-auto matmul(const torch::Tensor& A, const torch::Tensor& B) -> torch::Tensor;
-
-auto conv2d(const torch::Tensor& input, const torch::Tensor& kernel)
-    -> torch::Tensor;
-
-auto alphabetHistogram(const torch::Tensor& input, int64_t divider)
-    -> torch::Tensor;
-
-}  // namespace pmpp::ops::cuda::torch_impl
+#include "./alphabetHistogram/op.cuh"
+#include "./alphabetHistogram/op.hpp"
+#include "./conv2d/op.cuh"
+#include "./conv2d/op.hpp"
+#include "./cvtRGBtoGray/op.cuh"
+#include "./cvtRGBtoGray/op.hpp"
+#include "./matmul/op.cuh"
+#include "./matmul/op.hpp"
+#include "./vecAdd/op.cuh"
+#include "./vecAdd/op.hpp"
+#include "./reduction/op.hpp"
+#include "./reduction/op.cuh"
