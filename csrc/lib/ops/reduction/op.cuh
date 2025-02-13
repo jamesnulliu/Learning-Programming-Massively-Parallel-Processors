@@ -11,22 +11,27 @@ template <typename ScalarT, typename PredT>
 __global__ void reductionKernel(const ScalarT* in, uint32_t n, ScalarT* out,
                                 const PredT& pred)
 {
-    // Thread index in the block
-    uint32_t bTid = threadIdx.x;
+    uint32_t stride = blockDim.x;
+    uint32_t segmentId = blockIdx.x;
+    uint32_t segmentSize = 2 * stride;
+    // Block thread index
+    uint32_t bTidx = threadIdx.x;
+    // Global thread index
+    uint32_t gTidx = segmentId * segmentSize + bTidx;
+
     extern __shared__ ScalarT shmem[];
 
-    uint32_t stride = blockDim.x;
-    shmem[bTid] = pred(in[bTid], in[bTid + stride]);
+    shmem[bTidx] = pred(in[gTidx], in[gTidx + stride]);
     stride /= 2;
 
     for (; stride >= 1; stride /= 2) {
         __syncthreads();
-        if (bTid < stride) {
-            shmem[bTid] = pred(shmem[bTid], shmem[bTid + stride]);
+        if (bTidx < stride) {
+            shmem[bTidx] = pred(shmem[bTidx], shmem[bTidx + stride]);
         }
     }
-    if (bTid == 0) {
-        out[0] = shmem[0];
+    if (bTidx == 0) {
+        atomicAdd(out, shmem[0]);
     }
 }
 
@@ -34,13 +39,15 @@ template <typename ScalarT, typename PredT>
 [[nodiscard]] auto launchReduction(const ScalarT* in, uint32_t n,
                                    const PredT& pred) -> ScalarT
 {
+    constexpr uint32_t MAX_BLOCK_THREADS = 1024;
+
     ScalarT* d_out;
     cudaMalloc(&d_out, 1 * sizeof(ScalarT));
 
-    uint32_t nTreads = n / 2;
-    dim3 blockDim = {nTreads, 1, 1};
-    dim3 gridDim = {1, 1, 1};
-    uint32_t shmemSize = blockDim.x * sizeof(ScalarT);
+    uint32_t stride = std::min(n / 2, MAX_BLOCK_THREADS);
+    dim3 blockDim = {stride, 1, 1};
+    dim3 gridDim = {ceilDiv(n, stride * 2), 1, 1};
+    uint32_t shmemSize = stride * sizeof(ScalarT);
 
     reductionKernel<<<gridDim, blockDim, shmemSize>>>(in, n, d_out, pred);
 

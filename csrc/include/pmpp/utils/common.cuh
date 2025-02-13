@@ -16,11 +16,11 @@
         do {                                                                  \
             cudaError_t err_ = (err);                                         \
             if (err_ != cudaSuccess) {                                        \
-                fprintf(stderr, "CUDA error at %s:%d code=%d(%s) \"%s\"",     \
-                        __FILE__, __LINE__, err, cudaGetErrorString(err_),    \
-                        #err);                                                \
-                cudaDeviceReset();                                            \
-                throw std::runtime_error("CUDA error");                       \
+                ::fprintf(stderr, "CUDA error at %s:%d code=%d(%s) \"%s\"",   \
+                          __FILE__, __LINE__, err,                            \
+                          ::cudaGetErrorString(err_), #err);                  \
+                ::cudaDeviceReset();                                          \
+                throw ::std::runtime_error("CUDA error");                     \
             }                                                                 \
         } while (0)
 #endif
@@ -52,4 +52,5 @@ __host__ __device__ void initMemory(T* ptr, size_t n, const T& val)
         ptr[i] = val;
     }
 }
+
 }  // namespace pmpp::cuda

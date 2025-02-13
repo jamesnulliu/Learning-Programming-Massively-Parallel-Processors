@@ -10,3 +10,7 @@ OpTest:
       divider: 4
   MulReduction:
     - nInputs: 32
+    # # [NOTE] The following calculation results would be wrong?
+    # - nInputs: 64
+    # - nInputs: 128
+    # - nInputs: 512
