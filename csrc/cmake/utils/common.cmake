@@ -2,7 +2,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/logging.cmake)
 
 # @func  set_default_values(<var1> <value1> <var2> <value2> ...)
 # @brief Set default values for variables;
-# The variable will not be overwrite if it already has a value.
+# @note  The variable will not be overwritten if it is already defined.
 function(set_default_values)
     math(EXPR ARG_COUNT "${ARGC} % 2")
 

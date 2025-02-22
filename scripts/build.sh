@@ -4,6 +4,7 @@ set -e  # Exit on error
 
 export CC=gcc
 export CXX=g++
+export TORCH_VERSION=2.6.0
 
 SOURCE_DIR=./csrc
 BUILD_DIR=./build
@@ -12,6 +13,14 @@ CXX_STANDARD=20
 CUDA_STANDARD=20
 BUILD_SHARED_LIBS=OFF
 VCPKG_HOME=$VCPKG_HOME
+
+if [ -t 1 ]; then
+    STDOUT_IS_TERMINAL=ON
+    export GTEST_COLOR=yes
+else
+    STDOUT_IS_TERMINAL=OFF
+    export GTEST_COLOR=no
+fi
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -41,11 +50,11 @@ done
 
 cmake -S $SOURCE_DIR -B $BUILD_DIR -G Ninja \
     -DCMAKE_TOOLCHAIN_FILE="$VCPKG_HOME/scripts/buildsystems/vcpkg.cmake" \
+    -DVCPKG_TARGET_TRIPLET="x64-linux" \
+    -DVCPKG_OVERLAY_TRIPLETS="csrc/cmake/vcpkg-triplets" \
+    -DSTDOUT_IS_TERMINAL=$STDOUT_IS_TERMINAL \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_CXX_STANDARD=$CXX_STANDARD \
-    -DCMAKE_CUDA_STANDARD=$CUDA_STANDARD  \
-    -DVCPKG_TARGET_TRIPLET="x64-linux" \
-    -DVCPKG_OVERLAY_TRIPLETS="csrc/cmake/vcpkg-triplets"
+    -DCMAKE_CUDA_STANDARD=$CUDA_STANDARD 
 
-GTEST_COLOR=yes \
 cmake --build $BUILD_DIR --parallel 12 --target all check

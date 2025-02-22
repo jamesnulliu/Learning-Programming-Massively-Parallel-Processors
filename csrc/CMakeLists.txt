@@ -5,14 +5,13 @@ cmake_minimum_required(VERSION 3.30)
 project(PMPP VERSION 1.0.0)
 
 # Common utility functions
-include(${PROJECT_SOURCE_DIR}/cmake/utils/logging.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/utils/common.cmake)
 
 log_info("CMake Tookchain File Path: ${CMAKE_TOOLCHAIN_FILE}")
 
 set_default_values(
     PROJECT_NAMESPACE "pmpp::"
-    FORCE_COLORED_OUTPUT ON
+    STDOUT_IS_TERMINAL OFF
 )
 
 # Utility functions for installing libraries:
@@ -34,13 +33,6 @@ find_package(proxy CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 enable_testing()
 find_package(GTest CONFIG REQUIRED)
-
-if (${FORCE_COLORED_OUTPUT})
-    add_compile_options(
-        $<$<CXX_COMPILER_ID:GNU>:-fdiagnostics-color=always>
-        $<$<CXX_COMPILER_ID:Clang>:-fcolor-diagnostics>
-    )
-endif ()
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib)
 add_subdirectory(${PROJECT_SOURCE_DIR}/test)

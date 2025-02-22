@@ -4,11 +4,15 @@ set(VCPKG_LIBRARY_LINKAGE static)
 
 set(VCPKG_CMAKE_SYSTEM_NAME Linux)
 
-execute_process(
-    COMMAND python -c "import torch; print(torch.__version__.split('+')[0])"
-    OUTPUT_VARIABLE TORCH_VERSION
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+if(NOT DEFINED ENV{TORCH_VERSION})
+    execute_process(
+        COMMAND python -c "import torch; print(torch.__version__.split('+')[0])"
+        OUTPUT_VARIABLE TORCH_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+else()
+    set(TORCH_VERSION $ENV{TORCH_VERSION})
+endif()
 
 # Convert version string to comparable number
 string(REPLACE "." ";" VERSION_LIST ${TORCH_VERSION})

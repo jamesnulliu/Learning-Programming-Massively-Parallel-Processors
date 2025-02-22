@@ -2,7 +2,7 @@
 # @file compiler-configs-cuda.cmake
 # @brief Compiler configurations for cuda.
 #
-# @note Several parameters SHOULD be set BEFORE including this file:
+# @note Values SHOULD be set BEFORE including this file:
 #         - `ENV{NVCC_CCBIN}`: CUDA Compiler bindir. Default: auto-detected.
 #         - `CMAKE_CUDA_STANDARD`: CUDA Standard. Default: 20.
 # ==================================================================================================

@@ -2,7 +2,7 @@
 
 ## Required Parameters
 
-- `[ENV]{CUDA_HOME}`/`[ENV]{CUDA_DIR}`: CUDA toolkit installation path.  
+- `CUDA_HOME`/`CUDA_DIR`/`ENV{CUDA_HOME}`/`ENV{CUDA_DIR}`: CUDA toolkit installation path.  
   See: [cmake/libraries/cuda.cmake](../cmake/libraries/libcuda.cmake).
 
 ## Optional Parameters
@@ -10,7 +10,7 @@
 - `CMAKE_CUDA_STANDARD`: CUDA standard.  
   See: [cmake/compilers/cuda-compiler-configs.cmake](../cmake/compilers/cuda-compiler-configs.cmake).  
   Default: *Auto-Detect*.  
-  Possible values: `14`, `17`, `20`, `23`.
+  Possible values: `20`, `23`.
 - `CMAKE_CXX_SCAN_FOR_MODULES`: Whether to use C++ modules.  
   See: [cmake/compilers/cxx-compiler-configs.cmake](../cmake/compilers/cxx-compiler-configs.cmake).  
   Default: `OFF`.  
@@ -18,7 +18,7 @@
 - `CMAKE_CXX_STANDARD`: C++ standard.  
   See: [cmake/compilers/cxx-compiler-configs.cmake](../cmake/compilers/cxx-compiler-configs.cmake).  
   Default: *Auto-Detect*.  
-  Possible values: `14`, `17`, `20`, `23`.
+  Possible values: `20`, `23`.
 - `CMAKE_EXECUTABLE_SUFFIX`: Executable suffix.  
   See: [CMakelists.txt](../CMakeLists.txt).  
   Default: `.exe`.
@@ -39,3 +39,7 @@
 - `STACK_SIZE`: Stack size for the executable targets (if any).  
   See: [cmake/compilers/cxx-compiler-configs.cmake](../cmake/compilers/cxx-compiler-configs.cmake).  
   Default: `1048576` (Bytes).
+- `STDOUT_IS_TERMINAL`: Whether the standard output is a terminal; Controls the output color.
+  See: [CMakelists.txt](../CMakeLists.txt); [cmake/compilers/cxx-compiler-configs.cmake](../cmake/compilers/cxx-compiler-configs.cmake); [cmake/utils/logging.cmake](../cmake/utils/logging.cmake).  
+  Default: `OFF`.  
+  Possible values: `ON`, `OFF`.

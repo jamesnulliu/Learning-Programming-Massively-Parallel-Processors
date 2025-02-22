@@ -65,6 +65,9 @@ To build the C++ part only:
 bash scripts/build.sh
 ```
 
+> 📝**NOTE**  
+> See "[cmake-parameters.md](csrc/cmake/cmake-parameters.md)" for details about setting up the build process.
+
 You will find "./build/lib/libPmppTorchOps.so" which is the operator library and "./build/test/pmpp_test" which is the test executable (with gtest).
 
 Execute the test executable to test the library manually:
@@ -77,11 +80,12 @@ Note that the test is already integrated into CMake build system (with ctest); I
 
 ```bash
 # $BUILD_DIR is "./build" by default
+# Set `GTEST_COLOR` to yes or no to enable or disable colored output
 
 # If the library has not been build, target `all` before `check` is required
-GTEST_COLOR=yes cmake --build $BUILD_DIR -j $(nproc) --target all check
+cmake --build $BUILD_DIR -j $(nproc) --target all check
 # Or if the library has been build, `check` is enough
-GTEST_COLOR=yes cmake --build $BUILD_DIR -j $(nproc) --target check
+cmake --build $BUILD_DIR -j $(nproc) --target check
 ```
 
 To build and install the python package `pmpp` in current activated conda environment (pmpp operator library would be built automatically if it has not been built yet):

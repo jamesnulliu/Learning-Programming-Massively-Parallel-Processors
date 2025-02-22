@@ -1,7 +1,6 @@
 from pathlib import Path
 import shutil
 import sys
-from os import path as osp
 import subprocess
 from setuptools import find_namespace_packages, setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
@@ -17,7 +16,7 @@ BUILD_DIR = Path(SETUP_DIR, "build")
 # Path to the c/c++ source directory:
 CSRC_DIR = Path(SETUP_DIR, "csrc")
 # Where to install the op library:
-TORCH_OPS_DIR = Path(SETUP_DIR, "src", PKG_NAME, "_torch_ops")
+TORCH_OPS_DIR = Path(SETUP_DIR, PKG_NAME, "_torch_ops")
 
 
 class CMakeExtension(Extension):
@@ -103,7 +102,7 @@ setup(
         "build_py": BuildPy,
         "bdist_wheel": BDistWheel,
     },
-    packages=find_namespace_packages(where="./src"),
-    package_dir={"pmpp": "./src/pmpp"},
+    packages=find_namespace_packages(where="."),
+    package_dir={"pmpp": "./pmpp"},
     package_data={"pmpp": ["_torch_ops/lib/*.so", "_torch_ops/lib/*.dll"]},
 )
