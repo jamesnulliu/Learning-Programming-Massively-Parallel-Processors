@@ -88,6 +88,7 @@ class BDistWheel(bdist_wheel):
             wheel_file = wheels[0]
             shutil.copy2(wheel_file, dist_dir / wheel_file.name)
 
+
 # Command class
 CMD_CLASS = {"build_ext": CMakeBuild, "build_py": BuildPy}
 

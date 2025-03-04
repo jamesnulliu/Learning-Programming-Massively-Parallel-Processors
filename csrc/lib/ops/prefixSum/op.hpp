@@ -34,6 +34,6 @@ inline auto prefixSum(const torch::Tensor& A) -> torch::Tensor
     }
 
     return B;
-} 
+}
 }  // namespace torch_impl
 }  // namespace pmpp::ops::cpu
