@@ -13,6 +13,7 @@ TORCH_LIBRARY(pmpp, m)
     m.def("conv2d(Tensor input, Tensor kernel) -> Tensor");
     m.def("alphabet_histogram(Tensor input, int divider) -> Tensor");
     m.def("mul_reduction(Tensor input) -> Tensor");
+    m.def("prefix_sum(Tensor input) -> Tensor");
 }
 
 // Register the implementations.
@@ -27,6 +28,7 @@ TORCH_LIBRARY_IMPL(pmpp, CPU, m)
     m.impl("alphabet_histogram",
            &pmpp::ops::cpu::torch_impl::alphabetHistogram);
     m.impl("mul_reduction", &pmpp::ops::cpu::torch_impl::mulReduction);
+    m.impl("prefix_sum", &pmpp::ops::cpu::torch_impl::prefixSum);
 }
 
 TORCH_LIBRARY_IMPL(pmpp, CUDA, m)
@@ -38,4 +40,5 @@ TORCH_LIBRARY_IMPL(pmpp, CUDA, m)
     m.impl("alphabet_histogram",
            &pmpp::ops::cuda::torch_impl::alphabetHistogram);
     m.impl("mul_reduction", &pmpp::ops::cuda::torch_impl::mulReduction);
+    m.impl("prefix_sum", &pmpp::ops::cuda::torch_impl::prefixSum);
 }

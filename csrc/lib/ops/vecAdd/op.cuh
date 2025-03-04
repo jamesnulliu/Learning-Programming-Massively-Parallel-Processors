@@ -10,9 +10,10 @@ __global__ void vecAddKernel(const fp32_t* a, const fp32_t* b, fp32_t* c,
                              int32_t n)
 {
 
-    int i = threadIdx.x + blockDim.x * blockIdx.x;
-    if (i < n) {
-        c[i] = a[i] + b[i];
+    int gtid = threadIdx.x + blockDim.x * blockIdx.x;
+    if (gtid < n) {
+        // [GM] 2 load, 1 store
+        c[gtid] = a[gtid] + b[gtid];
     }
 }
 

@@ -8,6 +8,8 @@
 #include "./cvtRGBtoGray/op.hpp"
 #include "./matmul/op.cuh"
 #include "./matmul/op.hpp"
+#include "./prefixSum/op.cuh"
+#include "./prefixSum/op.hpp"
 #include "./reduction/op.cuh"
 #include "./reduction/op.hpp"
 #include "./vecAdd/op.cuh"

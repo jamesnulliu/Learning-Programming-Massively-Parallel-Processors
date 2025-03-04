@@ -11,14 +11,15 @@
 #         - `STACK_SIZE`: Stack size for the executable. Default: 1048576 (1MB).
 # ==================================================================================================
 
-include(${PROJECT_SOURCE_DIR}/cmake/utils/common.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../utils/common.cmake)
 
 enable_language(CXX)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD_REQUIRED   ON)
+
 set_default_values(
-    CMAKE_EXPORT_COMPILE_COMMANDS ON
     CMAKE_CXX_STANDARD            20
-    CMAKE_CXX_STANDARD_REQUIRED   ON
     CMAKE_CXX_SCAN_FOR_MODULES    OFF
     STACK_SIZE                    1048576
 )
@@ -31,6 +32,7 @@ log_info("STACK_SIZE: ${STACK_SIZE}")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     string(APPEND CMAKE_CXX_FLAGS " /permissive- /Zc:forScope /openmp /Zc:__cplusplus")
     string(APPEND CMAKE_CXX_FLAGS_RELEASE " /O2")
+    string(APPEND CMAKE_CXX_FLAGS_RELWITHDEBINFO " /O2 /Zi")
     string(APPEND CMAKE_CXX_FLAGS_DEBUG " /Zi")
     # Set stack size
     string(APPEND CMAKE_EXE_LINKER_FLAGS " /STACK:${STACK_SIZE}")
@@ -38,6 +40,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     string(APPEND CMAKE_CXX_FLAGS " -fopenmp -Wall -Wextra -Werror")
     string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O3")
+    string(APPEND CMAKE_CXX_FLAGS_RELWITHDEBINFO " -O3 -g")
     string(APPEND CMAKE_CXX_FLAGS_DEBUG " -g")
     # Set stack size
     if (WIN32)
@@ -49,6 +52,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     string(APPEND CMAKE_CXX_FLAGS " -fopenmp -Wall -Wextra -Werror")
     string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O3")
+    string(APPEND CMAKE_CXX_FLAGS_RELWITHDEBINFO " -O3 -g")
     string(APPEND CMAKE_CXX_FLAGS_DEBUG " -g")
     # Set stack size
     if (WIN32)

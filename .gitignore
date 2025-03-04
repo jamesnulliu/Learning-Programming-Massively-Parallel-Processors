@@ -161,3 +161,5 @@ cython_debug/
 /pmpp/_torch_ops
 vcpkg_installed
 /tmp
+/output/*
+!.gitkeep

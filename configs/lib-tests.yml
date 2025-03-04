@@ -1,4 +1,8 @@
 OpTest:
+  VecAdd:
+    - nElems: 64
+    - nElems: 1024
+    - nElems: 2048
   Conv2D:
     - inputHeight: 32
       inputWidth: 32
@@ -14,3 +18,7 @@ OpTest:
     # - nInputs: 64
     # - nInputs: 128
     # - nInputs: 512
+  PrefixSum:
+    - nInputs: 32
+    - nInputs: 64
+    - nInputs: 128

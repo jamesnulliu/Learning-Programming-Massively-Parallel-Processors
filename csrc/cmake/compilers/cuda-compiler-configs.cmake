@@ -7,7 +7,7 @@
 #         - `CMAKE_CUDA_STANDARD`: CUDA Standard. Default: 20.
 # ==================================================================================================
 
-include(${PROJECT_SOURCE_DIR}/cmake/utils/logging.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../utils/logging.cmake)
 
 enable_language(CUDA)
 
@@ -24,4 +24,5 @@ log_info("CMAKE_CUDA_STANDARD: ${CMAKE_CUDA_STANDARD}")
 
 string(APPEND CMAKE_CUDA_FLAGS " --expt-relaxed-constexpr")
 string(APPEND CMAKE_CUDA_FLAGS_RELEASE " -O3")
+string(APPEND CMAKE_CUDA_FLAGS_RELWITHDEBINFO " -O3 -lineinfo")
 string(APPEND CMAKE_CUDA_FLAGS_DEBUG " -lineinfo")

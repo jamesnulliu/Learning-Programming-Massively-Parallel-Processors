@@ -5,6 +5,8 @@
 
 ## 1. Environment
 
+### 1.1. Method 1: Use Docker Image
+
 The simplest way is to use my docker image [jamesnulliu/deeplearning:latest](https://hub.docker.com/r/jamesnulliu/deeplearning) which contains all the softwares you need to build the project:
 
 ```bash
@@ -12,6 +14,8 @@ docker pull jamesnulliu/deeplearning:latest
 ```
 
 > Check my blog: [Docker Container with Nvidia GPU Support](https://jamesnulliu.github.io/blogs/docker-container-with-nvidia-gpu-support) if you need any help.
+
+### 1.2. Method 2: Setup Environment Manually
 
 Or if you are planing to setup your own environment, here are some tips:
 
@@ -27,7 +31,7 @@ You should install all the softwares with corresponding versions listed bellow:
 
 **🎯Miniconda**
 
-Managing python environments with miniconda is always a good choice. Check [the official website](https://docs.anaconda.com/miniconda/install/#quick-command-line-install) for an installation guide.
+Managing python environments with miniconda is always a good choice. Check [the official website](https://www.anaconda.com/docs/getting-started/miniconda/install#quickstart-install-instructions) for an installation guide.
 
 After installation, if you do not intend to install all the packages in `base` environment, create a new conda environment named `PMPP` (or whatever you like) and activate it:
 

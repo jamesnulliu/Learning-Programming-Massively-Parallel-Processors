@@ -28,8 +28,8 @@ while [[ $# -gt 0 ]]; do
             SOURCE_DIR=$2; shift ;;
         -B|--build-dir)
             BUILD_DIR=$2; shift ;;
-        Release|Debug)
-            BUILD_TYPE=$1 ;;
+        Release|Debug|RelWithDebInfo|RD)
+            BUILD_TYPE=${1/RD/RelWithDebInfo} ;;
         --stdc++=*)
             CXX_STANDARD="${1#*=}" ;;
         --stdcuda=*)

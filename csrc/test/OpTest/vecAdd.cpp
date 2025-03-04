@@ -11,26 +11,32 @@ namespace pmpp::test::ops
 
 TEST_F(OpTest, VecAdd)
 {
+
+    const YAML::Node& configs = getConfigs()["OpTest"]["VecAdd"];
+
     static auto custom_op = torch::Dispatcher::singleton()
                                 .findSchemaOrThrow("pmpp::vector_add", "")
                                 .typed<torch::Tensor(const torch::Tensor&,
                                                      const torch::Tensor&)>();
 
-    constexpr pmpp::size_t nElems = 1e3;
+    for (const auto& cfg : configs) {
 
-    torch::Tensor matAh = torch::rand(nElems, torch::kF32);
-    torch::Tensor matBh = torch::rand(nElems, torch::kF32);
-    torch::Tensor matCh = custom_op.call(matAh, matBh);
+        auto nElems = cfg["nElems"].as<pmpp::size_t>();
 
-    ASSERT_TRUE(torch::cuda::is_available());
-    torch::Tensor matAd = matAh.to(torch::kCUDA);
-    torch::Tensor matBd = matBh.to(matAd.device());
-    torch::Tensor matCd2h = custom_op.call(matAd, matBd).to(torch::kCPU);
+        torch::Tensor matAh = torch::rand(nElems, torch::kF32);
+        torch::Tensor matBh = torch::rand(nElems, torch::kF32);
+        torch::Tensor matCh = custom_op.call(matAh, matBh);
 
-    Tensor cosSim =
-        f::cosine_similarity(matCh.flatten(), matCd2h.flatten(),
-                             f::CosineSimilarityFuncOptions().dim(0));
+        ASSERT_TRUE(torch::cuda::is_available());
+        torch::Tensor matAd = matAh.to(torch::kCUDA);
+        torch::Tensor matBd = matBh.to(matAd.device());
+        torch::Tensor matCd2h = custom_op.call(matAd, matBd).to(torch::kCPU);
 
-    EXPECT_GE(cosSim.item<fp32_t>(), 0.99);
+        Tensor cosSim =
+            f::cosine_similarity(matCh.flatten(), matCd2h.flatten(),
+                                 f::CosineSimilarityFuncOptions().dim(0));
+
+        EXPECT_GE(cosSim.item<fp32_t>(), 0.99);
+    }
 }
 }  // namespace pmpp::test::ops

@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
 import sys
+import os
 import subprocess
 from setuptools import find_namespace_packages, setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
@@ -87,6 +88,11 @@ class BDistWheel(bdist_wheel):
             wheel_file = wheels[0]
             shutil.copy2(wheel_file, dist_dir / wheel_file.name)
 
+# Command class
+CMD_CLASS = {"build_ext": CMakeBuild, "build_py": BuildPy}
+
+if os.environ.get("BDIST_WHEEL", None) in ["1", "true", "True", "ON", "on"]:
+    CMD_CLASS.update({"bdist_wheel": BDistWheel})
 
 setup(
     ext_modules=[
@@ -97,11 +103,7 @@ setup(
             install_dir=TORCH_OPS_DIR,
         )
     ],
-    cmdclass={
-        "build_ext": CMakeBuild,
-        "build_py": BuildPy,
-        "bdist_wheel": BDistWheel,
-    },
+    cmdclass=CMD_CLASS,
     packages=find_namespace_packages(where="."),
     package_dir={"pmpp": "./pmpp"},
     package_data={"pmpp": ["_torch_ops/lib/*.so", "_torch_ops/lib/*.dll"]},
