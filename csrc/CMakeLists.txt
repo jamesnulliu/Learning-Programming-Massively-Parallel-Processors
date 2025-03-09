@@ -9,9 +9,12 @@ include(${PROJECT_SOURCE_DIR}/cmake/utils/common.cmake)
 
 log_info("CMake Tookchain File Path: ${CMAKE_TOOLCHAIN_FILE}")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set_default_values(
     PROJECT_NAMESPACE "pmpp::"
     STDOUT_IS_TERMINAL OFF
+    CMAKE_EXECUTABLE_SUFFIX ""
 )
 
 # Utility functions for installing libraries:

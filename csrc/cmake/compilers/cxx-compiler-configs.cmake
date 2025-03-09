@@ -15,7 +15,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/../utils/common.cmake)
 
 enable_language(CXX)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED   ON)
 
 set_default_values(

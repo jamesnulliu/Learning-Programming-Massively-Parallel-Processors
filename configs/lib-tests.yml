@@ -1,8 +1,10 @@
 OpTest:
   VecAdd:
-    - nElems: 64
+    - nElems: 32
     - nElems: 1024
     - nElems: 2048
+    - nElems: 1048576  # 1024*1024
+    - nElems: 8388608  # 1024*1024
   Conv2D:
     - inputHeight: 32
       inputWidth: 32
@@ -14,10 +16,6 @@ OpTest:
       divider: 4
   MulReduction:
     - nInputs: 32
-    # # [NOTE] The following calculation results would be wrong?
-    # - nInputs: 64
-    # - nInputs: 128
-    # - nInputs: 512
   PrefixSum:
     - nInputs: 32
     - nInputs: 64

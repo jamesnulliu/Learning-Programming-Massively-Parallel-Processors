@@ -1,4 +1,4 @@
-# Env Variables: CC, CXX, NVCC_CCBIN
+# Env Variables: CC, CXX, NVCC_CCBIN, VCPKG_HOME
 
 set -e  # Exit on error
 
@@ -50,8 +50,8 @@ done
 
 cmake -S $SOURCE_DIR -B $BUILD_DIR -G Ninja \
     -DCMAKE_TOOLCHAIN_FILE="$VCPKG_HOME/scripts/buildsystems/vcpkg.cmake" \
-    -DVCPKG_TARGET_TRIPLET="x64-linux" \
     -DVCPKG_OVERLAY_TRIPLETS="csrc/cmake/vcpkg-triplets" \
+    -DVCPKG_TARGET_TRIPLET="x64-linux" \
     -DSTDOUT_IS_TERMINAL=$STDOUT_IS_TERMINAL \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_CXX_STANDARD=$CXX_STANDARD \

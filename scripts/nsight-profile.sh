@@ -1,6 +1,6 @@
 TEST_FILE="./build/test/pmpp_test"
 GTEST_FILTER="OpTest.VecAdd"
-OUTPUT_FILE="output/nsight_profile.ncu-rep"
+OUTPUT_FILE="outputs/nsight_profile.ncu-rep"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -17,5 +17,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 
-ncu --export $OUTPUT_FILE --force-overwrite $TEST_FILE \
-    --gtest_filter=$GTEST_FILTER
+ncu --export $OUTPUT_FILE --force-overwrite \
+    --set "full" \
+    $TEST_FILE --gtest_filter=$GTEST_FILTER
