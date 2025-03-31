@@ -5,6 +5,7 @@
 #include <torch/python.h>
 #include <torch/torch.h>
 #include <type_traits>
+#include <format>
 
 #include "pmpp/system.hpp"
 #include "pmpp/types/cu_types.cuh"

@@ -1,5 +1,5 @@
 TEST_FILE="./build/test/pmpp_test"
-GTEST_FILTER="OpTest.VecAdd"
+GTEST_FILTER="OpTest.VecAdd*"
 OUTPUT_FILE="outputs/nsight_profile.ncu-rep"
 
 while [[ $# -gt 0 ]]; do

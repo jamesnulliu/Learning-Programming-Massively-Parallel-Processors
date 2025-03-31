@@ -16,12 +16,21 @@
         do {                                                                  \
             cudaError_t err_ = (err);                                         \
             if (err_ != cudaSuccess) {                                        \
-                ::fprintf(stderr, "CUDA error at %s:%d code=%d(%s) \"%s\"",   \
+                ::fprintf(stderr,                                             \
+                          "CUDA error at %s:%d; Error code: %d(%s) \"%s\"",   \
                           __FILE__, __LINE__, err,                            \
                           ::cudaGetErrorString(err_), #err);                  \
                 ::cudaDeviceReset();                                          \
-                throw ::std::runtime_error("CUDA error");                     \
+                ::std::abort();                                               \
             }                                                                 \
+        } while (0)
+
+    #define PMPP_ABORT(msg)                                                   \
+        do {                                                                  \
+            ::fprintf(stderr, "Abort at %s:%d \"%s\"", __FILE__, __LINE__,    \
+                      msg);                                                   \
+            ::cudaDeviceReset();                                              \
+            ::std::abort();                                                   \
         } while (0)
 #endif
 
