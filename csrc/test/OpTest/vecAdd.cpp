@@ -103,9 +103,8 @@ TEST_F(OpTest, VecAddv2)
         std::cout << std::format("nElems: {}, cosSim: {}\n", nElems,
                                  cosSim.item<fp32_t>());
 
-        // // [NOTE] This won't pass because the kernel is deliberately wrong
-        // EXPECT_TRUE(matCh.allclose(matCd2h));
-        // EXPECT_GE(cosSim.item<fp32_t>(), 0.99);
+        EXPECT_TRUE(matCh.allclose(matCd2h));
+        EXPECT_GE(cosSim.item<fp32_t>(), 0.99);
     }
 }
 }  // namespace pmpp::test::ops

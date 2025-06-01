@@ -19,13 +19,13 @@ def set_random_seed(
         torch.backends.cudnn.benchmark = False
 
 
-class MultiHeadAttentionKernel(nn.Module):
-    def __init__(self, embed_dim: int, num_heads: int):
+class MultiHeadSelfAttentionKernel(nn.Module):
+    def __init__(self, hidden_dim: int, num_heads: int):
         super().__init__()
 
-        self.embed_dim: int = embed_dim
+        self.hidden_dim: int = hidden_dim
         self.num_heads: int = num_heads
-        self.head_size: int = embed_dim // num_heads
+        self.head_size: int = hidden_dim // num_heads
 
     def forward(
         self,
@@ -39,11 +39,13 @@ class MultiHeadAttentionKernel(nn.Module):
 
         Parameters
         ----------
-        q : torch.Tensor; Shape: (q_len, embed_dim)
+        q : torch.Tensor; Shape: (q_len, hidden_dim)
 
-        k : torch.Tensor; Shape: (kv_len, embed_dim)
+        k : torch.Tensor; Shape: (kv_len, hidden_dim)
 
-        v : torch.Tensor; Shape: (kv_len, embed_dim)
+        v : torch.Tensor; Shape: (kv_len, hidden_dim)
+
+        mask: torch.Tensor; Shape: (q_len, kv_len), optional
 
         Note
         ----
@@ -62,40 +64,46 @@ class MultiHeadAttentionKernel(nn.Module):
         # v -> (num_heads, kv_len, head_size)
         v = v.view(kv_len, self.num_heads, self.head_size).transpose(0, 1)
         # scores -> (num_heads, q_len, kv_len)
-        scores = torch.matmul(q, k.transpose(-1, -2)) / math.sqrt(self.head_size)
+        scores = torch.matmul(q, k.transpose(-1, -2)) / (self.head_size**0.5)
+        scores = (
+            scores.masked_fill(mask == 0, float("-inf"))
+            if mask is not None
+            else scores
+        )
         # scores -> (num_heads, q_len, kv_len)
-        scores = scores + mask if mask is not None else scores
-        # scores -> (num_heads, q_len, kv_len)
-        scores = F.softmax(scores, dim=-1)
+        attn_probs = F.softmax(scores, dim=-1)
         # out -> (num_heads, q_len, head_size)
-        out = torch.matmul(scores, v)
+        out = torch.matmul(attn_probs, v)
         # out -> (q_len, num_heads, head_size)
-        out = out.transpose(0, 1).reshape(q_len, self.embed_dim)
+        out = out.transpose(0, 1).reshape(q_len, self.hidden_dim)
 
         return out
 
 
-class MultiHeadAttention(nn.Module):
+class MultiHeadSelfAttention(nn.Module):
     def __init__(
         self,
         embed_dim: int,
         num_heads: int,
+        hidden_dim: int,
     ):
         super().__init__()
 
         self.embed_dim: int = embed_dim
         self.num_heads: int = num_heads
 
-        self.Wq = nn.Linear(embed_dim, embed_dim)
-        self.Wk = nn.Linear(embed_dim, embed_dim)
-        self.Wv = nn.Linear(embed_dim, embed_dim)
-        self.Wo = nn.Linear(embed_dim, embed_dim)
+        self.Wq = nn.Linear(embed_dim, hidden_dim)
+        self.Wk = nn.Linear(embed_dim, hidden_dim)
+        self.Wv = nn.Linear(embed_dim, hidden_dim)
+        self.Wo = nn.Linear(hidden_dim, embed_dim)
 
-        self.attn_kernel = MultiHeadAttentionKernel(embed_dim, num_heads)
+        self.attn_kernel = MultiHeadSelfAttentionKernel(hidden_dim, num_heads)
 
     def forward(
         self,
         seq: torch.Tensor,
+        k_cache: torch.Tensor = None,
+        v_cache: torch.Tensor = None,
         mask: Optional[torch.Tensor] = None,
     ):
         """
@@ -104,52 +112,6 @@ class MultiHeadAttention(nn.Module):
         seq : torch.Tensor; Shape: (seq_len, embed_dim)
             Input sequnce, containing `seq_len` tokens, and each token have
             been embedded to a `(embed_dim,)` tensor.
-
-        Returns
-        -------
-        tuple[torch.Tensor, torch.Tensor, torch.Tensor]
-            Attention output, cached K and cached V.
-        """
-
-        # q -> (seq_len, embed_dim)
-        q = self.Wq(seq)
-        # k -> (seq_len, embed_dim)
-        k = self.Wk(seq)
-        # v -> (seq_len, embed_dim)
-        v = self.Wv(seq)
-
-        # out -> (seq_len, embed_dim)
-        out = self.Wo(self.attn_kernel(q, k, v, mask))
-
-        return out, k, v
-
-
-class CachedMultiHeadAttention(nn.Module):
-
-    def __init__(self, embed_dim: int, num_heads: int):
-        super().__init__()
-
-        self.embed_dim: int = embed_dim
-        self.num_heads: int = num_heads
-
-        self.Wq = nn.Linear(embed_dim, embed_dim)
-        self.Wk = nn.Linear(embed_dim, embed_dim)
-        self.Wv = nn.Linear(embed_dim, embed_dim)
-        self.Wo = nn.Linear(embed_dim, embed_dim)
-
-        self.attn_kernel = MultiHeadAttentionKernel(embed_dim, num_heads)
-
-    def forward(
-        self,
-        seq: torch.Tensor,
-        k_cache: torch.Tensor,
-        v_cache: torch.Tensor,
-    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        """
-        Parameters
-        ----------
-        seq : torch.Tensor; Shape: (1, embed_dim)
-            Input sequnce, containing only ONE newly generated token.
         k_cache : torch.Tensor; Shape: (kv_len, embed_dim)
             Cached K.
         v_cache : torch.Tensor; Shape: (kv_len, embed_dim)
@@ -165,22 +127,105 @@ class CachedMultiHeadAttention(nn.Module):
             When decoing, the input seq only has ONE newly generated token.
         """
 
-        # q -> (1, embed_dim)
+        # q -> (seq_len, hidden_dim)
         q = self.Wq(seq)
-        # k -> (1, embed_dim)
+        # k -> (seq_len, hidden_dim)
         k = self.Wk(seq)
-        # v -> (1, embed_dim)
+        # v -> (seq_len, hidden_dim)
         v = self.Wv(seq)
 
-        # k_cache -> (kv_len + 1, embed_dim)
-        k_cache = torch.cat([k_cache, k.detach()], dim=0)
-        # v_cache -> (kv_len + 1, embed_dim)
-        v_cache = torch.cat([v_cache, v.detach()], dim=0)
+        # k_cache -> (kv_len + seq_len, hidden_dim)
+        k = k if k_cache is None else torch.cat([k_cache, k.detach()], dim=0) 
+        # v_cache -> (kv_len + seq_len, hidden_dim)
+        v = v if v_cache is None else torch.cat([v_cache, v.detach()], dim=0)
 
         # out -> (seq_len, embed_dim)
-        out = self.Wo(self.attn_kernel(q, k_cache, v_cache))
+        out = self.Wo(self.attn_kernel(q, k, v, mask))
 
-        return out, k_cache, v_cache
+        return out, k, v
+
+
+class TransformerBlock(nn.Module):
+    def __init__(self, embed_dim, num_heads, hidden_dim, mlp_dim, dropout=0.1):
+        super().__init__()
+        self.attention = MultiHeadSelfAttention(
+            embed_dim, num_heads, hidden_dim
+        )
+        self.norm1 = nn.RMSNorm(embed_dim)
+        self.norm2 = nn.RMSNorm(embed_dim)
+        self.mlp = nn.Sequential(
+            nn.Linear(embed_dim, mlp_dim),
+            nn.ReLU(),  # Or nn.GELU()
+            nn.Dropout(dropout),
+            nn.Linear(mlp_dim, embed_dim),
+            nn.Dropout(dropout),
+        )
+        self.dropout = nn.Dropout(dropout)
+
+        # Initialize K/V caches
+        self.k_cache: Optional[torch.Tensor] = None
+        self.v_cache: Optional[torch.Tensor] = None
+
+    def forward(
+        self,
+        x: torch.Tensor,
+        mask: Optional[torch.Tensor] = None,
+        is_prefilling: bool = True,
+    ):
+        """
+        Forward pass of the Transformer block.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor of shape (seq_len, embed_dim) when prefilling,
+            or (1, embed_dim) when decoding.
+
+        mask : Optional[torch.Tensor], optional
+            Attention mask of shape (seq_len, seq_len) when prefilling,
+            or None when decoding. Defaults to None.
+
+        Returns
+        -------
+        torch.Tensor
+            Output tensor of shape (seq_len, embed_dim) when prefilling,
+            or (1, embed_dim) when decoding.
+        """
+
+        # Multi-Head Attention
+        if is_prefilling:
+            # For prefilling, k_cache and v_cache are None.
+            # The mask provided should be for the current input sequence x.
+            # e.g., for causal mask, (seq_len, seq_len)
+            attn_output, k_updated, v_updated = self.attention(
+                seq=x, k_cache=None, v_cache=None, mask=mask
+            )
+        else:
+            # For decoding, x is typically the new token (q_len=1).
+            # We use the existing k_cache and v_cache.
+            # The mask (if any) should be for the single query token against all keys (cached + current).
+            # Often, `mask` can be None here if the setup implicitly handles causality.
+            attn_output, k_updated, v_updated = self.attention(
+                seq=x,
+                k_cache=self.k_cache,
+                v_cache=self.v_cache,
+                mask=mask,  # or mask=None if appropriate for decoding
+            )
+
+        # Add & Norm (Residual connection)
+        x = self.norm1(x + self.dropout(attn_output))
+
+        # Feed-Forward Network
+        mlp_output = self.mlp(x)
+
+        # Add & Norm (Residual connection)
+        x = self.norm2(x + self.dropout(mlp_output))
+
+        # Update k_cache and v_cache for the next step
+        self.k_cache = k_updated.detach()
+        self.v_cache = v_updated.detach()
+
+        return x
 
 
 class SimpleLM(nn.Module):
@@ -189,77 +234,62 @@ class SimpleLM(nn.Module):
         vocab_size: int,
         embed_dim: int,
         num_heads: int,
+        num_layers: int,
+        hidden_dim: int,
+        mlp_dim: int,
+        dropout: float = 0.1,
     ):
         super().__init__()
-
-        self.vocab_size = vocab_size
-        self.embed_dim = embed_dim
-        self.num_heads = num_heads
-
         self.embed = nn.Embedding(vocab_size, embed_dim)
-
-        self.mha = MultiHeadAttention(embed_dim, num_heads)
-
-        self.cached_mha = CachedMultiHeadAttention(embed_dim, num_heads)
-
-        self.proj_to_vocab = nn.Linear(embed_dim, vocab_size)
-
-        self.k_cache = nn.Buffer(torch.zeros(size=(0, embed_dim)))
-        self.v_cache = nn.Buffer(torch.zeros(size=(0, embed_dim)))
+        self.transformer_blocks = nn.ModuleList(
+            [
+                TransformerBlock(
+                    embed_dim, num_heads, hidden_dim, mlp_dim, dropout
+                )
+                for _ in range(num_layers)
+            ]
+        )
+        self.lm_head = nn.Linear(embed_dim, vocab_size)
 
     def forward(
         self,
-        prompt: torch.Tensor,
+        input_seq: torch.Tensor,
         is_prefilling: bool = True,
+        mask: Optional[torch.Tensor] = None,
     ):
         """
+        Forward pass of the SimpleLM model.
+
         Parameters
         ----------
-        prompt : torch.Tensor; Shape: (seq_len,)
-            Input prompt.
-
-            When prefilling, a prompt is an input sequence, containing
-            `seq_len` tokens.
-
-            When decoding, a prompt is a single token generated from the last
-            step, which means `seq_len` should equal to `1`.
+        input_seq : torch.Tensor
+            Input sequence of shape (seq_len,) when prefilling,
+            or (1,) when decoding.
+        is_prefilling : bool, optional
+            Whether the model is in prefilling mode. Defaults to True.
+        mask : Optional[torch.Tensor], optional
+            Attention mask of shape (seq_len, seq_len) when prefilling,
+            or None when decoding. Defaults to None.
+        Returns
+        -------
+        torch.Tensor
+            Output tensor of shape (seq_len, vocab_size).
         """
 
-        # embedded_prompt -> (seq_len, embed_dim)
-        embedded_prompt = self.embed(prompt)
+        # embedded_seq: (seq_len, embed_dim)
+        embedded_seq = self.embed(input_seq)
 
-        if is_prefilling:
-            seq_len = prompt.size(0)
-            mask = None
-            if seq_len > 1:
-                mask = torch.full(
-                    (seq_len, seq_len), -float("Inf"), device=prompt.device
-                )
-                mask = torch.triu(mask, diagonal=1)
-            # out -> (seq_len, embed_dim)
-            # k -> (seq_len, embed_dim)
-            # v -> (seq_len, embed_dim)
-            out, k, v = self.mha(embedded_prompt, mask)
-        else:
-            assert prompt.size(0) == 1
-            # out -> (seq_len, embed_dim)
-            # k -> (kv_len, embed_dim)
-            # v -> (kv_len, embed_dim)
-            out, k, v = self.cached_mha(embedded_prompt, self.k_cache, self.v_cache)
+        # Pass through the transformer blocks
+        for block in self.transformer_blocks:
+            embedded_seq = block(
+                embedded_seq, mask=mask, is_prefilling=is_prefilling
+            )
+        # embedded_seq: (seq_len, embed_dim)
 
-        # Update k cache and v cache
-        # [NOTE]
-        # | We use `detach()` frist to detach k and v from computation graph,
-        # | and then assign them to `self.k_cache` and `self.v_cache`.
-        self.k_cache = k.detach()
-        self.v_cache = v.detach()
+        # logits: (seq_len, vocab_size)
+        logits = self.lm_head(embedded_seq)
 
-        # Use the last token to calculate the probability of each word in the
-        # vocabulary bank:
-        # probs -> (vocab_size,)
-        probs = torch.softmax(self.proj_to_vocab(out[-1]), dim=-1)
-
-        return probs
+        return logits
 
 
 if __name__ == "__main__":
@@ -269,10 +299,22 @@ if __name__ == "__main__":
     vocab_size = 1024
     embed_dim = 128
     num_heads = 4
+    num_layers = 2
+    hidden_dim = 256
+    mlp_dim = 512
+    dropout = 0.1
     n_generate = 3
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    lm = SimpleLM(vocab_size, embed_dim, num_heads).to(device)
+    lm = SimpleLM(
+        vocab_size=vocab_size,
+        embed_dim=embed_dim,
+        num_heads=num_heads,
+        num_layers=num_layers,
+        hidden_dim=hidden_dim,
+        mlp_dim=mlp_dim,
+        dropout=dropout,
+    ).to(device)
 
     # Create a random prompt (for prefilling), containing `seq_len` tokens;
     # Each token is a random integer from 0 to `vocab_size`.
@@ -294,11 +336,9 @@ if __name__ == "__main__":
     # which is consistent with the shape of the input prompt (seq_len, ). If
     # set to `False`, the shape of `token` will be (), i.e., scalar, and you
     # have to reshape it to (1, ) manually before the next round of generation.
-    token = torch.argmax(probs, dim=-1, keepdim=True)
+    token = torch.argmax(probs[-1, :], dim=-1, keepdim=True)
     print(f"The 1th predicted token: {token}")
     print(f"|- Token Shape: {token.shape}")
-    print(f"|- K Cache Shape: {lm.k_cache.shape}")
-    print(f"|- V Cache Shape: {lm.v_cache.shape}")
 
     # Decoding ================================================================
     # At decoding stage, we feed the model with a token generated from the last
@@ -306,8 +346,6 @@ if __name__ == "__main__":
     # "an input sequnce with only one token".
     for i in range(1, n_generate):
         probs = lm(token, is_prefilling=False)
-        token = torch.argmax(probs, dim=-1, keepdim=True)
+        token = torch.argmax(probs[-1, :], dim=-1, keepdim=True)
         print(f"The {i+1}th predicted token: {token}")
         print(f"|- Token Shape: {token.shape}")
-        print(f"|- K Cache Shape: {lm.k_cache.shape}")
-        print(f"|- V Cache Shape: {lm.v_cache.shape}")

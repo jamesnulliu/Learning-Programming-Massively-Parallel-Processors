@@ -4,56 +4,47 @@
 #include <cuda_runtime_api.h>
 #include <stdexcept>
 
-#ifdef PMPP_CUDA_ERR_CHECK
-    #error "PMPP_CUDA_ERR_CHECK already defined."
+/**
+ * @brief Check the given cuda error. Exit with `EXIT_FAILURE` if not
+ *        success.
+ *        The error message is printed to `stderr`.
+ */
+#define PMPP_CUDA_ERR_CHECK(err)                                              \
+    do {                                                                      \
+        cudaError_t err_ = (err);                                             \
+        if (err_ != cudaSuccess) {                                            \
+            ::fprintf(                                                        \
+                stderr, "CUDA error at %s:%d; Error code: %d(%s) \"%s\"",     \
+                __FILE__, __LINE__, err, ::cudaGetErrorString(err_), #err);   \
+            ::cudaDeviceReset();                                              \
+            ::std::exit(EXIT_FAILURE);                                        \
+        }                                                                     \
+    } while (0)
+
+#define PMPP_CUDA_ABORT(msg)                                                  \
+    do {                                                                      \
+        ::fprintf(stderr, "Abort at %s:%d \"%s\"", __FILE__, __LINE__, msg);  \
+        ::cudaDeviceReset();                                                  \
+        ::std::abort();                                                       \
+    } while (0)
+
+#ifdef NDEBUG
+    /**
+     * @brief Cuda error check is turned off on Release mode.
+     */
+    #define PMPP_DEBUG_CUDA_ERR_CHECK(err) ((void) 0)
 #else
     /**
      * @brief Check the given cuda error. Exit with `EXIT_FAILURE` if not
      *        success.
      *        The error message is printed to `stderr`.
      */
-    #define PMPP_CUDA_ERR_CHECK(err)                                          \
-        do {                                                                  \
-            cudaError_t err_ = (err);                                         \
-            if (err_ != cudaSuccess) {                                        \
-                ::fprintf(stderr,                                             \
-                          "CUDA error at %s:%d; Error code: %d(%s) \"%s\"",   \
-                          __FILE__, __LINE__, err,                            \
-                          ::cudaGetErrorString(err_), #err);                  \
-                ::cudaDeviceReset();                                          \
-                ::std::abort();                                               \
-            }                                                                 \
-        } while (0)
-
-    #define PMPP_ABORT(msg)                                                   \
-        do {                                                                  \
-            ::fprintf(stderr, "Abort at %s:%d \"%s\"", __FILE__, __LINE__,    \
-                      msg);                                                   \
-            ::cudaDeviceReset();                                              \
-            ::std::abort();                                                   \
-        } while (0)
-#endif
-
-#ifdef PMPP_DEBUG_CUDA_ERR_CHECK
-    #error "PMPP_DEBUG_CUDA_ERR_CHECK already defined."
-#else
-    #ifdef NDEBUG
-        /**
-         * @brief Cuda error check is turned off on Release mode.
-         */
-        #define PMPP_DEBUG_CUDA_ERR_CHECK(err) ((void) 0)
-    #else
-        /**
-         * @brief Check the given cuda error. Exit with `EXIT_FAILURE` if not
-         *        success.
-         *        The error message is printed to `stderr`.
-         */
-        #define PMPP_DEBUG_CUDA_ERR_CHECK(err) PMPP_CUDA_ERR_CHECK(err)
-    #endif
+    #define PMPP_DEBUG_CUDA_ERR_CHECK(err) PMPP_CUDA_ERR_CHECK(err)
 #endif
 
 namespace pmpp::cuda
 {
+
 template <typename T>
 __host__ __device__ void initMemory(T* ptr, size_t n, const T& val)
 {
@@ -61,5 +52,4 @@ __host__ __device__ void initMemory(T* ptr, size_t n, const T& val)
         ptr[i] = val;
     }
 }
-
 }  // namespace pmpp::cuda

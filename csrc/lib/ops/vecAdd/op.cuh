@@ -9,7 +9,7 @@ namespace pmpp::ops::cuda
 __global__ void vecAddKernelv0(const fp32_t* a, const fp32_t* b, fp32_t* c,
                                int32_t n)
 {
-
+    // Coalesced DRAM access
     int gtid = threadIdx.x + blockDim.x * blockIdx.x;
     if (gtid < n) {
         // [DRAM] 2 load, 1 store, 3 inst
@@ -20,9 +20,10 @@ __global__ void vecAddKernelv0(const fp32_t* a, const fp32_t* b, fp32_t* c,
 __global__ void vecAddKernelv1(const fp32_t* a, const fp32_t* b, fp32_t* c,
                                int32_t n)
 {
-
+    // Coalesced DRAM access
     int gtid = threadIdx.x + blockDim.x * blockIdx.x;
     gtid = gtid % 2 == 0 ? gtid + 1 : gtid - 1;
+    gtid = gtid == n ? n - 1 : gtid;
     if (gtid < n) {
         // [DRAM] 2 load, 1 store, 3 inst
         c[gtid] = a[gtid] + b[gtid];
@@ -32,8 +33,10 @@ __global__ void vecAddKernelv1(const fp32_t* a, const fp32_t* b, fp32_t* c,
 __global__ void vecAddKernelv2(const fp32_t* a, const fp32_t* b, fp32_t* c,
                                int32_t n)
 {
-
-    int gtid = threadIdx.x + blockDim.x * blockIdx.x + 1;
+    int gtid = threadIdx.x + blockDim.x * blockIdx.x;
+    if (gtid % warpSize == 0) {
+        gtid = (gtid + warpSize) % (ceilDiv(n, warpSize) * warpSize);
+    }
     if (gtid < n) {
         // [DRAM] 2 load, 1 store, 3 inst
         c[gtid] = a[gtid] + b[gtid];
@@ -53,9 +56,9 @@ void launchVecAdd(const fp32_t* d_A, const fp32_t* d_B, fp32_t* d_C, size_t n)
     } else if (VERSION == 2) {
         vecAddKernelv2<<<gridSize, blockSize>>>(d_A, d_B, d_C, n);
     } else {
-        PMPP_ABORT(std::format("Unsupported version: {}", VERSION).c_str());
+        PMPP_CUDA_ABORT(
+            std::format("Unsupported version: {}", VERSION).c_str());
     }
-
     PMPP_DEBUG_CUDA_ERR_CHECK(cudaGetLastError());
 }
 
