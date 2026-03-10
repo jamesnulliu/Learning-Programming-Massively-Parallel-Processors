@@ -75,22 +75,14 @@ class PPO:
 
         for t in reversed(range(T)):
             valid_t = mask[:, t]
-            next_valid = (
-                mask[:, t + 1] if t + 1 < T else torch.zeros_like(valid_t)
-            )
+            next_valid = mask[:, t + 1] if t + 1 < T else torch.zeros_like(valid_t)
             next_value = (
-                values[:, t + 1]
-                if t + 1 < T
-                else torch.zeros_like(values[:, t])
+                values[:, t + 1] if t + 1 < T else torch.zeros_like(values[:, t])
             )
 
             nonterminal = (1.0 - dones[:, t]) * next_valid
 
-            delta = (
-                rewards[:, t]
-                + self.gamma * next_value * nonterminal
-                - values[:, t]
-            )
+            delta = rewards[:, t] + self.gamma * next_value * nonterminal - values[:, t]
             gae = delta + self.gamma * self.lam * nonterminal * gae
 
             advantages[:, t] = gae * valid_t
@@ -260,22 +252,16 @@ def ppo_training(
 
         with torch.no_grad():
             # reponses: [B, T], act_mask: [B,T], dones: [B,T]
-            responses, act_mask, dones = rollout(
-                policy_model, prompts, max_len=T
-            )
+            responses, act_mask, dones = rollout(policy_model, prompts, max_len=T)
 
             # Behavior policy quantities (fixed for this batch)
-            old_logp = logp_of_sampled_tokens(
-                policy_model, prompts, responses
-            )  # [B,T]
+            old_logp = logp_of_sampled_tokens(policy_model, prompts, responses)  # [B,T]
             old_values = value_preds(
                 policy_model, value_model, prompts, responses
             )  # [B,T]
 
             # Reference policy logp (fixed)
-            ref_logp = logp_of_sampled_tokens(
-                ref_model, prompts, responses
-            )  # [B,T]
+            ref_logp = logp_of_sampled_tokens(ref_model, prompts, responses)  # [B,T]
 
             # Reward model output
             rm_reward = reward_model(prompts, responses)  # [B,T] or [B]
@@ -288,20 +274,14 @@ def ppo_training(
             if rm_reward.dim() == 1:
                 rm_tok = torch.zeros_like(old_logp)
                 # place reward on last valid action token
-                last_idx = (
-                    act_mask.to(torch.long).sum(dim=1).clamp_min(1) - 1
-                )  # [B]
-                rm_tok[torch.arange(B, device=rm_tok.device), last_idx] = (
-                    rm_reward
-                )
+                last_idx = act_mask.to(torch.long).sum(dim=1).clamp_min(1) - 1  # [B]
+                rm_tok[torch.arange(B, device=rm_tok.device), last_idx] = rm_reward
                 rm_reward_tok = rm_tok
             # If rm_reward is already [B,T], this is a no-op.
             else:
                 rm_reward_tok = rm_reward
 
-            rewards_shaped = ppo.shaped_rewards(
-                rm_reward_tok, kl_tok, act_mask
-            )
+            rewards_shaped = ppo.shaped_rewards(rm_reward_tok, kl_tok, act_mask)
 
             adv, ret = ppo.advantage_estimate(
                 rewards=rewards_shaped,
@@ -323,12 +303,8 @@ def ppo_training(
             "ret": ret,
             # optional logging
             "kl_mean_rollout": kl_mean,
-            "rm_reward_mean": ppo.masked_mean(
-                rm_reward_tok, act_mask
-            ).detach(),
-            "shaped_reward_mean": ppo.masked_mean(
-                rewards_shaped, act_mask
-            ).detach(),
+            "rm_reward_mean": ppo.masked_mean(rm_reward_tok, act_mask).detach(),
+            "shaped_reward_mean": ppo.masked_mean(rewards_shaped, act_mask).detach(),
         }
 
         # ---------- (B) PPO OPTIMIZATION ON THIS FIXED BUFFER ----------
@@ -361,9 +337,7 @@ def ppo_training(
                     new_values=new_values,
                     returns=minibatch["ret"],
                     val_mask=minibatch["act_mask"],  # usually same mask
-                    old_values=minibatch[
-                        "old_values"
-                    ],  # for value clipping if enabled
+                    old_values=minibatch["old_values"],  # for value clipping if enabled
                 )
 
                 ent_b = ppo.entropy_bonus(entropy, minibatch["act_mask"])

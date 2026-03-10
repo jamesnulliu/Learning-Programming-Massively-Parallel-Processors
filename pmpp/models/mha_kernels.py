@@ -52,14 +52,10 @@ class MHAKernel(nn.Module):
         # scores -> (num_heads, q_len, kv_len)
         scores = torch.matmul(q, k.transpose(-1, -2)) / (self.head_size**0.5)
         scores = (
-            scores.masked_fill(mask == 0, float("-inf"))
-            if mask is not None
-            else scores
+            scores.masked_fill(mask == 0, float("-inf")) if mask is not None else scores
         )
         # scores -> (num_heads, q_len, kv_len)
-        attn_probs = F.softmax(scores.to(torch.float32), dim=-1).type_as(
-            scores
-        )
+        attn_probs = F.softmax(scores.to(torch.float32), dim=-1).type_as(scores)
         # out -> (num_heads, q_len, head_size)
         out = torch.matmul(attn_probs, v)
         # out -> (q_len, num_heads, head_size)

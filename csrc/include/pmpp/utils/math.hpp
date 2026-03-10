@@ -14,7 +14,7 @@ namespace pmpp
  * @return The ceiling of the division of `a` by `b`.
  */
 template <typename T1, typename T2>
-[[nodiscard]] 
+[[nodiscard]]
 constexpr auto ceilDiv(T1 a, T2 b) -> T1
 {
     return T1((a + b - 1) / b);

@@ -165,9 +165,7 @@ class SimpleLM(nn.Module):
         self.embed = nn.Embedding(vocab_size, embed_dim)
         self.transformer_blocks = nn.ModuleList(
             [
-                TransformerBlock(
-                    embed_dim, num_heads, hidden_dim, mlp_dim, dropout
-                )
+                TransformerBlock(embed_dim, num_heads, hidden_dim, mlp_dim, dropout)
                 for _ in range(num_layers)
             ]
         )
@@ -203,9 +201,7 @@ class SimpleLM(nn.Module):
 
         # Pass through the transformer blocks
         for block in self.transformer_blocks:
-            embedded_seq = block(
-                embedded_seq, mask=mask, is_prefilling=is_prefilling
-            )
+            embedded_seq = block(embedded_seq, mask=mask, is_prefilling=is_prefilling)
         # embedded_seq: (seq_len, embed_dim)
 
         # logits: (seq_len, vocab_size)
