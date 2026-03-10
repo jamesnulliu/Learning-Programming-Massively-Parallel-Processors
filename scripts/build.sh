@@ -4,7 +4,7 @@ set -e  # Exit on error
 
 export CC=gcc
 export CXX=g++
-export TORCH_VERSION=2.6.0
+export NVCC_CCBIN=gcc
 
 SOURCE_DIR=./csrc
 BUILD_DIR=./build

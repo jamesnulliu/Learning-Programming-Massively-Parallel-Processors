@@ -1,86 +1,10 @@
-import math
 from typing import Optional
 import torch
 from torch import nn
-from torch.nn import functional as F
-import numpy as np
+from .mha_kernels import MHAKernel
 
 
-def set_random_seed(
-    seed: int, rank: int = 0, force_deterministic: bool = False
-) -> None:
-    """
-    Set the random seed for numpy and torch.
-    """
-    np.random.seed(seed + rank)
-    torch.manual_seed(seed + rank)
-    if force_deterministic:
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
-
-
-class MultiHeadSelfAttentionKernel(nn.Module):
-    def __init__(self, hidden_dim: int, num_heads: int):
-        super().__init__()
-
-        self.hidden_dim: int = hidden_dim
-        self.num_heads: int = num_heads
-        self.head_size: int = hidden_dim // num_heads
-
-    def forward(
-        self,
-        q: torch.Tensor,
-        k: torch.Tensor,
-        v: torch.Tensor,
-        mask: Optional[torch.Tensor] = None,
-    ):
-        """
-        Calculates softmax(Q @ KT / sqrt(dk)) @ V .
-
-        Parameters
-        ----------
-        q : torch.Tensor; Shape: (q_len, hidden_dim)
-
-        k : torch.Tensor; Shape: (kv_len, hidden_dim)
-
-        v : torch.Tensor; Shape: (kv_len, hidden_dim)
-
-        mask: torch.Tensor; Shape: (q_len, kv_len), optional
-
-        Note
-        ----
-        When prefilling, q_len equals to seq_len (number of tokens in the input
-        seq);
-        When decoding, q_len equals to 1, refering to the newly generated
-        token. (Based on different sampling strategies, q_len could be larger
-        than 1.)
-        """
-
-        q_len, kv_len = q.size(0), k.size(0)
-        # q -> (num_heads, q_len, head_size)
-        q = q.view(q_len, self.num_heads, self.head_size).transpose(0, 1)
-        # k -> (num_heads, kv_len, head_size)
-        k = k.view(kv_len, self.num_heads, self.head_size).transpose(0, 1)
-        # v -> (num_heads, kv_len, head_size)
-        v = v.view(kv_len, self.num_heads, self.head_size).transpose(0, 1)
-        # scores -> (num_heads, q_len, kv_len)
-        scores = torch.matmul(q, k.transpose(-1, -2)) / (self.head_size**0.5)
-        scores = (
-            scores.masked_fill(mask == 0, float("-inf"))
-            if mask is not None
-            else scores
-        )
-        # scores -> (num_heads, q_len, kv_len)
-        attn_probs = F.softmax(scores, dim=-1)
-        # out -> (num_heads, q_len, head_size)
-        out = torch.matmul(attn_probs, v)
-        # out -> (q_len, num_heads, head_size)
-        out = out.transpose(0, 1).reshape(q_len, self.hidden_dim)
-
-        return out
-
-
-class MultiHeadSelfAttention(nn.Module):
+class MHA(nn.Module):
     def __init__(
         self,
         embed_dim: int,
@@ -97,7 +21,7 @@ class MultiHeadSelfAttention(nn.Module):
         self.Wv = nn.Linear(embed_dim, hidden_dim)
         self.Wo = nn.Linear(hidden_dim, embed_dim)
 
-        self.attn_kernel = MultiHeadSelfAttentionKernel(hidden_dim, num_heads)
+        self.attn_kernel = MHAKernel(hidden_dim, num_heads)
 
     def forward(
         self,
@@ -135,7 +59,7 @@ class MultiHeadSelfAttention(nn.Module):
         v = self.Wv(seq)
 
         # k_cache -> (kv_len + seq_len, hidden_dim)
-        k = k if k_cache is None else torch.cat([k_cache, k.detach()], dim=0) 
+        k = k if k_cache is None else torch.cat([k_cache, k.detach()], dim=0)
         # v_cache -> (kv_len + seq_len, hidden_dim)
         v = v if v_cache is None else torch.cat([v_cache, v.detach()], dim=0)
 
@@ -148,9 +72,7 @@ class MultiHeadSelfAttention(nn.Module):
 class TransformerBlock(nn.Module):
     def __init__(self, embed_dim, num_heads, hidden_dim, mlp_dim, dropout=0.1):
         super().__init__()
-        self.attention = MultiHeadSelfAttention(
-            embed_dim, num_heads, hidden_dim
-        )
+        self.attention = MHA(embed_dim, num_heads, hidden_dim)
         self.norm1 = nn.RMSNorm(embed_dim)
         self.norm2 = nn.RMSNorm(embed_dim)
         self.mlp = nn.Sequential(
@@ -293,8 +215,6 @@ class SimpleLM(nn.Module):
 
 
 if __name__ == "__main__":
-    set_random_seed(114514)
-
     seq_len = 4
     vocab_size = 1024
     embed_dim = 128
@@ -347,5 +267,5 @@ if __name__ == "__main__":
     for i in range(1, n_generate):
         probs = lm(token, is_prefilling=False)
         token = torch.argmax(probs[-1, :], dim=-1, keepdim=True)
-        print(f"The {i+1}th predicted token: {token}")
+        print(f"The {i + 1}th predicted token: {token}")
         print(f"|- Token Shape: {token.shape}")

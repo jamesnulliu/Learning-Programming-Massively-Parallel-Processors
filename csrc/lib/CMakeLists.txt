@@ -25,7 +25,7 @@ target_link_libraries(
     Python::Python
     ${TORCH_LIBRARIES}
     fmt::fmt
-    msft_proxy
+    msft_proxy4::proxy
 )
 
 target_compile_definitions(${LIB_NAME} 

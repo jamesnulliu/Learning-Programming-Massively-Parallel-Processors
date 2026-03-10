@@ -8,16 +8,12 @@ from setuptools.command.build_ext import build_ext
 from setuptools.command.build_py import build_py
 from wheel.bdist_wheel import bdist_wheel
 
-# Name of your package; Must match the directory name under `CSRC_DIR`:
 PKG_NAME = "pmpp"
-# Path to the directory of setup.py file:
 SETUP_DIR = Path(__file__).parent.absolute()
-# Where to create the cmake build directory:
-BUILD_DIR = Path(SETUP_DIR, "build")
-# Path to the c/c++ source directory:
-CSRC_DIR = Path(SETUP_DIR, "csrc")
-# Where to install the op library:
-TORCH_OPS_DIR = Path(SETUP_DIR, PKG_NAME, "_torch_ops")
+BUILD_DIR = SETUP_DIR / "build"
+CSRC_DIR = SETUP_DIR / "csrc"
+TORCH_OPS_DIR = SETUP_DIR / PKG_NAME / "_torch_ops"
+BUILD_TYPE = "Release"
 
 
 class CMakeExtension(Extension):
@@ -48,7 +44,7 @@ class CMakeBuild(build_ext):
             ext.source_dir,
             "-B",
             ext.build_dir,
-            "Release",
+            BUILD_TYPE,
         ]
         # If Current Platform is Windows
         if sys.platform == "win32":
